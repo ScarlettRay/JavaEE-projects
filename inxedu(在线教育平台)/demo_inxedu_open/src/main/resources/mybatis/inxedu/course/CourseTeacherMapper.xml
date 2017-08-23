@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CourseTeacherMapper">
+
+	<resultMap id="CourseTeacherResult" type="CourseTeacher">
+	<result property="courseId" column="COURSE_ID" />
+	<result property="teacherId" column="TEACHER_ID" />
+	</resultMap>
+
+	<sql id="edu_course_teacher_columns">
+	EDU_COURSE_TEACHER.COURSE_ID,
+	EDU_COURSE_TEACHER.TEACHER_ID
+	</sql>
+
+	<!-- 添加课程与讲师的关联数 -->
+	<insert id="createCourseTeacher" parameterType="java.lang.String">
+	INSERT INTO EDU_COURSE_TEACHER(<include refid="edu_course_teacher_columns"/>) VALUES ${value}
+	</insert>
+	<!-- 删除课程与讲师的关联数据 -->
+	<delete id="deleteCourseTeacher" parameterType="int">
+	DELETE FROM EDU_COURSE_TEACHER WHERE COURSE_ID=#{value}
+	</delete>
+</mapper>

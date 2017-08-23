@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CommentMapper">
+	<resultMap type="Comment" id="CommentResult">
+		<result property="commentId" column="COMMENT_ID" />
+		<result property="userId" column="USER_ID" />
+		<result property="pCommentId" column="P_COMMENT_ID" />
+		<result property="content" column="CONTENT" />
+		<result property="addTime" column="ADDTIME" />
+		<result property="otherId" column="OTHER_ID" />
+		<result property="praiseCount" column="PRAISE_COUNT" />
+		<result property="replyCount" column="REPLY_COUNT" />
+		<result property="type" column="TYPE" />
+		
+		<result property="email" column="email" />
+		<result property="picImg" column="picImg" />
+		<result property="userName" column="showName" />
+		
+	</resultMap>
+
+	<sql id="edu_comment_column">
+		edu_comment.COMMENT_ID,
+		edu_comment.USER_ID,
+		edu_comment.P_COMMENT_ID,
+		edu_comment.CONTENT,
+		edu_comment.ADDTIME,
+		edu_comment.OTHER_ID,
+		edu_comment.PRAISE_COUNT,
+		edu_comment.REPLY_COUNT,
+		edu_comment.TYPE
+	</sql>
+	<sql id="edu_comment_property">
+		#{commentId},
+		#{userId},
+		#{pCommentId},
+		#{content},
+		#{addTime},
+		#{otherId},
+		#{praiseCount},
+		#{replyCount},
+		#{type}
+	</sql>
+
+	<select id="queryComment" parameterType="java.util.Map" resultMap="CommentResult">
+		select
+		<include refid="edu_comment_column" />
+		,edu_user.SHOW_NAME userName,edu_user.EMAIL email,edu_user.PIC_IMG picImg
+		from edu_comment
+		left join edu_user on edu_comment.USER_ID=edu_user.USER_ID
+		<where>
+			edu_comment.COMMENT_ID = #{commentId}
+		</where>
+	</select>
+
+	<select id="queryCommentInteraction" parameterType="java.util.Map" resultMap="CommentResult">
+		select
+		<include refid="edu_comment_column" />
+		,edu_user.SHOW_NAME showName
+		,edu_user.EMAIL email
+		,edu_user.PIC_IMG as picImg,
+		edu_course.COURSE_NAME courseName,
+		edu_course.COURSE_ID courseId
+		from edu_comment
+		left join edu_user on edu_comment.USER_ID=edu_user.USER_ID
+		left join edu_course on edu_comment.OTHER_ID = edu_course.COURSE_ID
+		<where>
+			edu_comment.TYPE = 2
+			order by edu_comment.PRAISE_COUNT desc 
+		</where>
+		limit #{limitNumber}
+	</select>
+
+	<select id="getCommentByPage" parameterType="java.util.Map" resultMap="CommentResult">
+		select
+		<include refid="edu_comment_column" />
+		,edu_user.EMAIL email,
+		edu_user.SHOW_NAME userName,
+		edu_user.PIC_IMG picImg
+		from edu_comment
+		left join edu_user on edu_comment.USER_ID=edu_user.USER_ID
+		<where>
+			<if test="e.type!=0">
+				and edu_comment.type=#{e.type}
+			</if>
+			<if test="e.otherId!=0">
+				and edu_comment.OTHER_ID=#{e.otherId}
+			</if>
+			<if test="e.pCommentId==0">
+				and edu_comment.P_COMMENT_ID=0
+			</if>
+			<if test="e.pCommentId!=0">
+				and edu_comment.P_COMMENT_ID=#{e.pCommentId}
+			</if>
+			<if test="e.email!=null and e.email!=''">
+				and edu_user.email LIKE CONCAT('%',#{e.email},'%')
+			</if>
+			<if test="e.content!=null and e.content!=''">
+				and edu_comment.content LIKE CONCAT('%',#{e.content},'%')
+			</if>
+			<if test="e.beginCreateTime!=null and e.beginCreateTime!=''">
+				AND edu_comment.ADDTIME >= #{e.beginCreateTime}
+			</if>
+			<if test="e.endCreateTime!=null and e.endCreateTime!=''">
+				AND <![CDATA[ edu_comment.ADDTIME <= #{e.endCreateTime}]]>
+			</if>
+			<if test="e.order=='commentId'">
+				order by edu_comment.COMMENT_ID desc
+			</if>
+			<if test="e.order=='praiseCount'">
+				order by edu_comment.PRAISE_COUNT desc
+			</if>
+		</where>
+	</select>
+
+	<!-- 添加评论 -->
+	<insert id="addComment" parameterType="Comment" useGeneratedKeys="true" keyProperty="id" keyColumn="COMMENT_ID">
+		INSERT INTO edu_comment(
+		<include refid="edu_comment_column" />
+		) VALUE(
+		<include refid="edu_comment_property" />
+		)
+	</insert>
+
+	<!-- 更新评论的点赞数和回复数 -->
+	<update id="updateCommentNum" parameterType="Map">
+		UPDATE edu_comment SET
+		<if test="type=='praiseCount'">
+			PRAISE_COUNT=PRAISE_COUNT${num}
+		</if>
+		<if test="type=='replyCount'">
+			REPLY_COUNT=REPLY_COUNT${num}
+		</if>
+		WHERE
+		edu_comment.COMMENT_ID=#{commentId}
+	</update>
+
+	<update id="updateComment" parameterType="Map">
+		UPDATE edu_comment SET
+		CONTENT=#{content},
+		PRAISE_COUNT=#{praiseCount}
+		WHERE
+		edu_comment.COMMENT_ID=#{commentId}
+	</update>
+	
+	<delete id="delComment" parameterType="Map">
+		DELETE FROM edu_comment WHERE
+		(COMMENT_ID = #{commentId} or P_COMMENT_ID = #{commentId})
+	</delete>
+	
+	<select id="queryCommentList" parameterType="comment" resultMap="CommentResult">
+		select
+		<include refid="edu_comment_column" />
+		,edu_user.EMAIL email,
+		edu_user.SHOW_NAME userName,
+		edu_user.PIC_IMG picImg
+		from edu_comment
+		left join edu_user on edu_comment.USER_ID=edu_user.USER_ID
+		<where>
+			<if test="type!=0">
+				and edu_comment.type=#{type}
+			</if>
+			<if test="otherId!=0">
+				and edu_comment.OTHER_ID=#{otherId}
+			</if>
+			<if test="pCommentId==0">
+				and edu_comment.P_COMMENT_ID=0
+			</if>
+			<if test="pCommentId!=0">
+				and edu_comment.P_COMMENT_ID=#{pCommentId}
+			</if>
+			<if test="email!=null and email!=''">
+				and edu_user.email LIKE CONCAT('%',#{email},'%')
+			</if>
+			<if test="content!=null and content!=''">
+				and edu_comment.content LIKE CONCAT('%',#{content},'%')
+			</if>
+			<if test="beginCreateTime!=null and beginCreateTime!=''">
+				AND edu_comment.ADDTIME >= #{beginCreateTime}
+			</if>
+			<if test="endCreateTime!=null and endCreateTime!=''">
+				AND <![CDATA[ edu_comment.ADDTIME <= #{endCreateTime}]]>
+			</if>
+			<if test="order=='commentId'">
+				order by edu_comment.COMMENT_ID desc
+			</if>
+			<if test="order=='praiseCount'">
+				order by edu_comment.PRAISE_COUNT desc
+			</if>
+			<if test="limitNumber!=null and limitNumber!=0">
+				limit #{limitNumber}
+			</if>
+		</where>
+	</select>
+</mapper>

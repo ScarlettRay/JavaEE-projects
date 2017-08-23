@@ -1,0 +1,175 @@
+/*  Theme Name:admin_inxedu_management_system Theme
+	Author:westdrug
+	Update @ 2013-09-06
+*/
+@charset "utf-8"; /* 编码设置*/
+@import url(skin.css); /* 引入素材文件*/
+/*---======== /commonStyle ========---*/
+html, body {
+	height: 100%;
+	width: 100%;
+}
+
+body, ul, ol, li, p, h1, h2, h3, h4, h5, h6, form, fieldset, table, td,
+	img, div, menu, dl, dt, dd {
+	border: 0;
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	background: #FFF;
+	font: 12px/150% 'Arial', 'Helvetica Neue', 'Helvetica', 'sans-serif';
+	word-break: break-all;
+	word-wrap: break-word;
+}
+
+ul, ol, li {
+	list-style: none
+}
+
+a {
+	text-decoration: none;
+	color: #555;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #2DA2A7;
+}
+
+a:focus {
+	outline: none;
+	-moz-outline: none;
+}
+
+a:active {
+	outline: none;
+	blr: expression(this.onFocus = this.blur ())
+}
+
+a, img {
+	border: 0 none;
+}
+
+input, select, button {
+	vertical-align: middle;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	empty-cells: show;
+}
+
+.clearfix:after {
+	content: '';
+	display: block;
+	height: 0;
+	clear: both;
+	overflow: hidden;
+}
+
+.clearfix {
+	display: inline-block;
+}
+
+* html .clearfix {
+	height: 1%;
+}
+
+.clearfix {
+	display: block;
+}
+
+.clear {
+	clear: both;
+	font-size: 0;
+	content: " ";
+	line-height: 1px;
+	height: 1px;
+	_height: 1%;
+	margin-top: -1px;
+}
+
+.fsize12 {
+	font-size: 12px;
+}
+
+.icon12 {
+	height: 12px;
+	width: 12px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.icon14 {
+	height: 14px;
+	width: 14px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.icon30 {
+	height: 30px;
+	width: 30px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.mt10 {
+	margin-top: 10px;
+}
+
+.mt20 {
+	margin-top: 20px;
+}
+
+.mt30 {
+	margin-top: 30px;
+}
+
+.mt40 {
+	margin-top: 40px;
+}
+
+.mt50 {
+	margin-top: 50px;
+}
+
+.ml10 {
+	margin-left: 10px;
+}
+
+.ml50 {
+	margin-left: 50px;
+}
+
+.w50pre {
+	width: 50%;
+}
+
+.fl {
+	float: left;
+	_display: inline;
+}
+
+.fr {
+	float: right;
+	_display: inline;
+}
+
+.disIb {
+	display: inline-block; +
+	display: inline;
+	_display: inline;
+}
+
+.undis {
+	display: none;
+}
+
+.commonTab01 table.ke-container td {
+	border: none;
+	padding: 0;
+}

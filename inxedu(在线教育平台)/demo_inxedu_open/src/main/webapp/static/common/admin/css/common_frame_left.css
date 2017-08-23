@@ -1,0 +1,96 @@
+/*---======== /leftMenuStyle ========---*/
+a {
+	text-decoration: none;
+	color: #555;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #2DA2A7;
+}
+
+a:focus {
+	outline: none;
+	-moz-outline: none;
+}
+
+a:active {
+	outline: none;
+	blr: expression(this.onFocus = this.blur ())
+}
+
+a, img {
+	border: 0 none;
+}
+
+#lMenu dl dt, #lMenu dl dd li {
+	height: 38px;
+	line-height: 38px;
+}
+
+#lMenu dl dt {
+	border-bottom: 1px solid #383838;
+	border-top: 1px solid #484848;
+	position: relative;
+	overflow: hidden;
+}
+
+#lMenu dl dt a {
+	display: block;
+	height: 36px;
+	padding-left: 28px;
+}
+
+#lMenu dl dt a:hover {
+	background: #444;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+#lMenu dl dt a span {
+	color: #aaa;
+	font: 14px/36px 'Microsoft YaHei';
+	margin-left: 10px;
+	vertical-align: middle;
+}
+
+#lMenu dl dd {
+	display: none;
+}
+
+#lMenu dl dd li {
+	background: #333;
+	border-bottom: 1px solid #404040;
+}
+
+#lMenu dl dd li a {
+	color: #888;
+	display: block;
+	font: 12px/38px 'Microsoft YaHei';
+	padding-left: 56px;
+	width: 150px;
+}
+
+#lMenu dl dd li a:hover {
+	color: #2DA2A7;
+	text-decoration: none;
+}
+
+#lMenu dl dt.current, #lMenu dl dt.current a:hover {
+	background: #2DA2A7;
+	filter: none;
+}
+
+#lMenu dl dt.current a span {
+	color: #fff;
+}
+
+.sjWrap {
+	display: none;
+	position: absolute;
+	right: -13px;
+	top: 0;
+	font-style: normal;
+	font-size: 26px;
+	color: #F5F5F5;
+}

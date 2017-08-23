@@ -1,0 +1,47 @@
+@charset "utf-8";
+/*
+	power by http://www.inxedu.com/
+	v1.0 | 2015/06/06 
+ 	-----------------------------------------
+	westdrug | 2015(yy)/08(mm)/05(dd) 
+	http://www.inxedu.com/
+*/
+
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	vertical-align: baseline;
+	background: transparent;
+}
+body {
+	font-size:12px;
+	line-height: 160%;
+	font-family: "Helvetica Neue",\5FAE\8F6F\96C5\9ED1,"SimHei",Tohoma; /* mac字体，黑体，xp字体，宋体有点问题，所以不用，除非自写*/
+	word-break:break-all;
+	word-wrap:break-word;
+	position: relative;
+}
+ol, ul, li { list-style: none; }
+blockquote, q { quotes: none; }
+table{border-collapse:collapse;border-spacing:0;empty-cells:show;}
+blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
+/* remember to define focus styles! */
+:focus { outline: 0; }
+/* remember to highlight inserts somehow! */
+ins,s { text-decoration: none; }
+del { text-decoration: line-through;}
+em,i {font-style:normal;}
+/* Remove annoying border on linked images. */
+a,img { border: none; text-decoration:none; }
+a{text-decoration:none;}
+a:hover{text-decoration:underline;}a:focus{outline:none;-moz-outline:none;}
+a:active{outline:none;blr:expression(this.onFocus=this.blur())}
+h1 {font-size: 36px;line-height: 45px;font-weight:normal;}
+h2 {font-size: 24px;line-height: 30px;font-weight:normal;}
+h3 {font-size: 18px;line-height: 22px;font-weight:normal;}
+h4 {font-size: 16px;line-height: 20px;font-weight:normal;}
+h5 {font-size: 14px;line-height: 18px;font-weight:normal;}
+h6 {font-size: 12px;line-height: 16px;font-weight:normal;}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section{display:block;}

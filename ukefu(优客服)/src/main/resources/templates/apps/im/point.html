@@ -1,0 +1,319 @@
+var data = {};
+/******
+	id:"xxxxxxxxxxxx",
+	name:'UKeFu',
+	email:'ukefu@ukewo.cn',
+	mobile:'18588888888'
+****/
+
+<#if inviteData??>
+;(function(name,context,definition){if(typeof module!=='undefined'&&module.exports){module.exports=definition()}else if(typeof define==='function'&&define.amd){define(definition)}else{context[name]=definition()}})('Fingerprint',this,function(){'use strict';var Fingerprint=function(options){var nativeForEach,nativeMap;nativeForEach=Array.prototype.forEach;nativeMap=Array.prototype.map;this.each=function(obj,iterator,context){if(obj===null){return}if(nativeForEach&&obj.forEach===nativeForEach){obj.forEach(iterator,context)}else if(obj.length===+obj.length){for(var i=0,l=obj.length;i<l;i++){if(iterator.call(context,obj[i],i,obj)==={})return}}else{for(var key in obj){if(obj.hasOwnProperty(key)){if(iterator.call(context,obj[key],key,obj)==={})return}}}};this.map=function(obj,iterator,context){var results=[];if(obj==null)return results;if(nativeMap&&obj.map===nativeMap)return obj.map(iterator,context);this.each(obj,function(value,index,list){results[results.length]=iterator.call(context,value,index,list)});return results};if(typeof options=='object'){this.hasher=options.hasher;this.screen_resolution=options.screen_resolution;this.screen_orientation=options.screen_orientation;this.canvas=options.canvas;this.ie_activex=options.ie_activex}else if(typeof options=='function'){this.hasher=options}};Fingerprint.prototype={get:function(){var keys=[];keys.push(navigator.userAgent);keys.push('${appid!''}');keys.push(navigator.language);keys.push(screen.colorDepth);if(this.screen_resolution){var resolution=this.getScreenResolution();if(typeof resolution!=='undefined'){keys.push(resolution.join('x'))}}keys.push(new Date().getTimezoneOffset());keys.push(this.hasSessionStorage());keys.push(this.hasLocalStorage());keys.push(this.hasIndexDb());if(document.body){keys.push(typeof(document.body.addBehavior))}else{keys.push(typeof undefined)}keys.push(typeof(window.openDatabase));keys.push(navigator.cpuClass);keys.push(navigator.platform);keys.push(navigator.doNotTrack);keys.push(this.getPluginsString());if(this.canvas&&this.isCanvasSupported()){keys.push(this.getCanvasFingerprint())}if(this.hasher){return this.hasher(keys.join('###'),31)}else{return this.murmurhash3_32_gc(keys.join('###'),31)}},murmurhash3_32_gc:function(key,seed){var remainder,bytes,h1,h1b,c1,c2,k1,i;remainder=key.length&3;bytes=key.length-remainder;h1=seed;c1=0xcc9e2d51;c2=0x1b873593;i=0;while(i<bytes){k1=((key.charCodeAt(i)&0xff))|((key.charCodeAt(++i)&0xff)<<8)|((key.charCodeAt(++i)&0xff)<<16)|((key.charCodeAt(++i)&0xff)<<24);++i;k1=((((k1&0xffff)*c1)+((((k1>>>16)*c1)&0xffff)<<16)))&0xffffffff;k1=(k1<<15)|(k1>>>17);k1=((((k1&0xffff)*c2)+((((k1>>>16)*c2)&0xffff)<<16)))&0xffffffff;h1^=k1;h1=(h1<<13)|(h1>>>19);h1b=((((h1&0xffff)*5)+((((h1>>>16)*5)&0xffff)<<16)))&0xffffffff;h1=(((h1b&0xffff)+0x6b64)+((((h1b>>>16)+0xe654)&0xffff)<<16))}k1=0;switch(remainder){case 3:k1^=(key.charCodeAt(i+2)&0xff)<<16;case 2:k1^=(key.charCodeAt(i+1)&0xff)<<8;case 1:k1^=(key.charCodeAt(i)&0xff);k1=(((k1&0xffff)*c1)+((((k1>>>16)*c1)&0xffff)<<16))&0xffffffff;k1=(k1<<15)|(k1>>>17);k1=(((k1&0xffff)*c2)+((((k1>>>16)*c2)&0xffff)<<16))&0xffffffff;h1^=k1}h1^=key.length;h1^=h1>>>16;h1=(((h1&0xffff)*0x85ebca6b)+((((h1>>>16)*0x85ebca6b)&0xffff)<<16))&0xffffffff;h1^=h1>>>13;h1=((((h1&0xffff)*0xc2b2ae35)+((((h1>>>16)*0xc2b2ae35)&0xffff)<<16)))&0xffffffff;h1^=h1>>>16;return h1>>>0},hasLocalStorage:function(){try{return!!window.localStorage}catch(e){return true;}},hasSessionStorage:function(){try{return!!window.sessionStorage}catch(e){return true;}},hasIndexDb:function(){try{return!!window.indexedDB}catch(e){return true;}},isCanvasSupported:function(){var elem=document.createElement('canvas');return!!(elem.getContext&&elem.getContext('2d'))},isIE:function(){if(navigator.appName==='Microsoft Internet Explorer'){return true}else if(navigator.appName==='Netscape'&&/Trident/.test(navigator.userAgent)){return true}return false},getPluginsString:function(){if(this.isIE()&&this.ie_activex){return this.getIEPluginsString()}else{return this.getRegularPluginsString()}},getRegularPluginsString:function(){return this.map(navigator.plugins,function(p){var mimeTypes=this.map(p,function(mt){return[mt.type,mt.suffixes].join('~')}).join(',');return[p.name,p.description,mimeTypes].join('::')},this).join(';')},getIEPluginsString:function(){if(window.ActiveXObject){var names=['ShockwaveFlash.ShockwaveFlash','AcroPDF.PDF','PDF.PdfCtrl','QuickTime.QuickTime','rmocx.RealPlayer G2 Control','rmocx.RealPlayer G2 Control.1','RealPlayer.RealPlayer(tm) ActiveX Control (32-bit)','RealVideo.RealVideo(tm) ActiveX Control (32-bit)','RealPlayer','SWCtl.SWCtl','WMPlayer.OCX','AgControl.AgControl','Skype.Detection'];return this.map(names,function(name){try{new ActiveXObject(name);return name}catch(e){return null}}).join(';')}else{return"";}},getScreenResolution:function(){var resolution;if(this.screen_orientation){resolution=(screen.height>screen.width)?[screen.height,screen.width]:[screen.width,screen.height]}else{resolution=[screen.height,screen.width]}return resolution},getCanvasFingerprint:function(){var canvas=document.createElement('canvas');var ctx=canvas.getContext('2d');var txt='http://valve.github.io';ctx.textBaseline="top";ctx.font="14px 'Arial'";ctx.textBaseline="alphabetic";ctx.fillStyle="#f60";ctx.fillRect(125,1,62,20);ctx.fillStyle="#069";ctx.fillText(txt,2,15);ctx.fillStyle="rgba(102, 204, 0, 0.7)";ctx.fillText(txt,4,17);return canvas.toDataURL()}};return Fingerprint});
+
+var result = new Fingerprint().get();
+
+<#assign style = 'text-align:center;height: 150px;border-radius: 30px;width: 40px;margin: 0px 5px 0 0; float:left ; word-wrap: break-word;overflow: hidden;font-size:15px;color:#FFFFFF;text-align: center;padding-top: 15px;border: 1px solid #DCDCDC;background-color:#008df3;'>
+<#if inviteData.consult_vsitorbtn_model?? && inviteData.consult_vsitorbtn_model == "2">
+	<#assign style = 'height: 70px;border-radius: 3px; width: 70px;margin: 40px auto;word-wrap:break-word;overflow:hidden;font-size: 22px;color:#FFFFFF;text-align:center;padding-top:10px;border: 1px solid #DCDCDC;background-color:#dddddd;'>
+<#elseif inviteData.consult_vsitorbtn_model?? && inviteData.consult_vsitorbtn_model == "3">
+	<#assign style = 'height: 70px;border-radius: 70px; width: 70px;margin: 40px auto;word-wrap:break-word;overflow:hidden;font-size: 22px;color:#FFFFFF;text-align:center;padding-top:5px;border: 1px solid #DCDCDC;background-color:#dddddd;'>
+</#if>
+
+<#assign text = 'width:25px;'>
+<#if inviteData.consult_vsitorbtn_model?? && inviteData.consult_vsitorbtn_model == "2">
+	<#assign text = 'width:100%;'>
+<#elseif inviteData.consult_vsitorbtn_model?? && inviteData.consult_vsitorbtn_model == "3">
+	<#assign text = 'width:100%;'>
+</#if>
+
+<#assign theme = 'background-color: #377FED !important;border-color: #377FED !important;'>
+<#if inviteData.consult_vsitorbtn_color?? && inviteData.consult_vsitorbtn_color == "2">
+	<#assign theme = 'background-color: #67CAFF !important;'>
+<#elseif inviteData.consult_vsitorbtn_color?? && inviteData.consult_vsitorbtn_color == "3">
+	<#assign theme = 'background-color: #8E8E8E !important;'>
+<#elseif inviteData.consult_vsitorbtn_color?? && inviteData.consult_vsitorbtn_color == "4">
+	<#assign theme = 'background-color: #32c24d !important;'>
+<#elseif inviteData.consult_vsitorbtn_color?? && inviteData.consult_vsitorbtn_color == "5">
+	<#assign theme = 'background-color: #E45DB3 !important;'>
+<#elseif inviteData.consult_vsitorbtn_color?? && inviteData.consult_vsitorbtn_color == "6">
+	<#assign theme = 'background-color: #FF626F !important;'>
+</#if>
+
+<#assign position = "right:10px;top:40%;">
+<#if inviteData.consult_vsitorbtn_position?? && inviteData.consult_vsitorbtn_position == "right,top">
+	<#assign position = "right:10px;top:10px;">
+<#elseif inviteData.consult_vsitorbtn_position?? && inviteData.consult_vsitorbtn_position == "right,bottom">
+	<#assign position = "right:10px;bottom:10px;">
+<#elseif inviteData.consult_vsitorbtn_position?? && inviteData.consult_vsitorbtn_position == "right,middle">
+	<#assign position = "right:10px;top:40%;">
+<#elseif inviteData.consult_vsitorbtn_position?? && inviteData.consult_vsitorbtn_position == "left,top">
+	<#assign position = "left:10px;top:10px;">
+<#elseif inviteData.consult_vsitorbtn_position?? && inviteData.consult_vsitorbtn_position == "left,middle">
+	<#assign position = "left:10px;top:40%;">
+<#elseif inviteData.consult_vsitorbtn_position?? && inviteData.consult_vsitorbtn_position == "left,bottom">
+	<#assign position = "left:10px;bottom:10px;">
+</#if>
+
+<#assign invitetheme = 'background-color: #377FED !important;'>
+<#if inviteData.consult_invite_color?? && inviteData.consult_invite_color == "2">
+	<#assign invitetheme = 'background-color: #67CAFF !important;'>
+<#elseif inviteData.consult_invite_color?? && inviteData.consult_invite_color == "3">
+	<#assign invitetheme = 'background-color: #8E8E8E !important;'>
+<#elseif inviteData.consult_invite_color?? && inviteData.consult_invite_color == "4">
+	<#assign invitetheme = 'background-color: #32c24d !important;'>
+<#elseif inviteData.consult_invite_color?? && inviteData.consult_invite_color == "5">
+	<#assign invitetheme = 'background-color: #E45DB3 !important;'>
+<#elseif inviteData.consult_invite_color?? && inviteData.consult_invite_color == "6">
+	<#assign invitetheme = 'background-color: #FF626F !important;'>
+</#if>
+var signal = 0 ;
+function append(parent, text) {
+    if (typeof text === 'string') {
+      var temp = document.createElement('div');
+      temp.innerHTML = text;
+      parent.appendChild(temp);
+    }
+    else {
+      parent.appendChild(text);
+    }
+}
+var ukefu = {
+	time : new Date().getTime(),
+	in :"${schema!'http'}://${hostname!''}<#if port?? && port != 80>:${port!''}</#if>/im/${appid!''}/userlist?appid=${appid!''}&orgi=${orgi!''}&client=${client}" ,
+	url :"${schema!'http'}://${hostname!''}<#if port?? && port != 80>:${port!''}</#if>/im/online?appid=${appid!''}&orgi=${orgi!''}&client=${client}" ,
+	chat : "${schema!'http'}://${hostname!''}<#if port?? && port != 80>:${port!''}</#if>/im/index.html?appid=${appid!''}&orgi=${orgi!''}&client=${client}" , 
+	refuse :"${schema!'http'}://${hostname!''}<#if port?? && port != 80>:${port!''}</#if>/im/refuse.html?appid=${appid!''}&orgi=${orgi!''}&client=${client}", 
+	config : function(d){
+		data = d ;	
+		if(d.id != null && d.id != ''){
+			result = d.id ;
+		}
+	} ,
+	ajax:function(url , success , error) {
+		var xhr = false;  
+		signal = signal + 1 ;
+        try {  
+            xhr = new ActiveXObject("Msxml2.XMLHTTP"); // ie msxml3.0+（IE7.0及以上）  
+        } catch (e) {  
+        	try{  
+          		xhr = new ActiveXObject("Microsoft.XMLHTTP"); //ie msxml2.6（IE5/6）  
+          	}catch (e2) {  
+           		xhr = false;  
+        	}  
+        }  
+        if (!xhr && typeof XMLHttpRequest != 'undefined') {// Firefox, Opera 8.0+, Safari  
+            xhr = new XMLHttpRequest();  
+        }  
+		xhr.onreadystatechange = function (data) {
+			if (xhr.readyState == 4) {
+				var status = xhr.status;
+				if (status >= 200 && status < 300) {
+					var event = xhr.responseText ;
+					if(event && event.indexOf('invite') >= 0){
+						ukefu.writeinvite() ;
+					}else if(event && event.indexOf('refuse') >= 0){
+						ukefu.refuseInvite() ;
+					}else if(event && event.indexOf('accept') >= 0){
+						ukefu.acceptInvite() ;
+					}
+					if(success){
+						success(event);
+					}
+				} else {
+					//
+					if(error){
+						error();
+					}
+				}
+				xhr.abort();
+				signal = signal - 1 ;
+			}
+		}
+		xhr.open("GET", url , true);
+ 		
+		try{
+			xhr.send(null);
+		}catch(e){}
+	},
+	ping : function(){
+		var url = ukefu.url ;
+		if(data){
+			if(data.id){
+				url = url + "&id="+data.id ;	
+			}
+			if(data.name){
+				url = url + "&name="+encodeURIComponent(data.name);	
+			}
+			if(data.email){
+				url = url + "&email="+encodeURIComponent(data.email);	
+			}
+			if(data.mobile){
+				url = url + "&mobile="+encodeURIComponent(data.mobile);	
+			}
+		}
+		ukefu.ajax(url + "&userid="+result+"&sessionid=${sessionid!''}&sign="+result+"&t="+new Date().getTime() , function(){ukefu.ping();});	
+	},
+	writepoint:function(){
+		var skillHtml = "<#if inviteData?? && inviteData.skill == true><div id='ichatContent' class='ichat-content ichat-float-left' style='display: block;font-size:14px;;${theme!''};box-shadow: 0 0 10px #DDDDDD;border: 1px solid #DDDDDD;overflow: hidden;text-align: left;'><div>" +
+						"<div class='ichat-title ichat-cursor' style='color: #FFFFFF;font-weight:400;font-size: 14px;font-weight: 400;height: 28px;line-height: 28px;overflow: hidden;padding: 0 5px;background-repeat: repeat-x;'><img src='${schema!'http'}://${hostname!''}<#if port?? && port != 80>:${port!''}</#if>/images/logo-icon.png' style='height:20px;vertical-align: middle;'/> <#if inviteData.consult_skill_title??>${inviteData.consult_skill_title!''}</#if></div>"+
+						"<div id='ichatItem0' class='ichat-list' style='background: none repeat scroll 0 0 #FFFFFF;overflow-x: hidden;overflow-y: auto;padding: 5px 0;margin: 0;'>"+
+						"<img src='${schema!'http'}://${hostname!''}<#if port?? && port != 80>:${port!''}</#if>/images/title.jpg' style='width:140px;margin:0 5px;vertical-align: middle;'/>"+
+						"<div style='padding:10px 5px;text-align:center;color:#555;'><#if inviteData?? && inviteData.skill == true && inviteData.consult_skill_msg??>${(inviteData.consult_skill_msg!'')?no_esc}</#if></div>"+
+						
+						<#if skillList??>
+						<#list skillList as skill>
+						<#if inviteData.consult_skill_numbers == 0 || skill_index lt inviteData.consult_skill_numbers >
+							<#assign skillNum = 0 >
+							<#list agentList as agent>
+								<#if agent.organ?? && agent.organ == skill.id>
+								<#assign skillNum = skillNum+1 >
+								</#if>
+							</#list>
+							"<div style='padding:5px;color:#555;border:1px solid #dddddd;background-color:#efefef;'>"+
+							"<a href='${schema!'http'}://${hostname!''}<#if port?? && port != 80>:${port!''}</#if>/im/text/${appid!''}.html?skill=${skill.id!''}' onclick='return openAgentChatDialog(this.href)' style='color: #777;    text-decoration: none;'>${skill.name!''}（${skillNum}）</a>"+
+							"</div>"+
+							<#if inviteData.consult_skill_agent?? && inviteData.consult_skill_agent == true>
+							"<ul class='ichat-list-ul' style='border: 0 none;list-style: none outside none;margin: 0;padding: 0;width: 150px;'>"+
+							<#if agentList??>
+							<#assign agentNum = 0>
+							<#list agentList as agent>
+								<#if agent.organ?? && agent.organ == skill.id && agentNum lt inviteData.consult_skill_maxagent >
+								<#assign agentNum = agentNum + 1>
+								"<li style='height: 23px;list-style: none outside none;margin-left: 6px;overflow: hidden;padding: 2px;'>"+
+								"<a href='${schema!'http'}://${hostname!''}<#if port?? && port != 80>:${port!''}</#if>/im/text/${appid!''}.html?skill=${skill.id!''}&agent=${agent.id!''}' onclick='return openAgentChatDialog(this.href)' style='color: #777;    text-decoration: none;'> <img src='${schema!'http'}://${hostname!''}<#if port?? && port != 80>:${port!''}</#if>/images/creater.png' style='vertical-align: middle;'></img> ${agent.uname!''}</a></li>"+
+								"</li>"+
+								</#if>
+							</#list>
+							</#if>
+							"</ul>"+
+							</#if>
+						</#if>
+						</#list>
+						</#if>
+						
+						"</div>"+
+						
+						"<div class='ichat-title ichat-cursor' style='color: #FFFFFF;font-weight:400;font-size: 14px;font-weight: 400;height: 28px;line-height: 28px;overflow: hidden;padding: 0 5px;background-repeat: repeat-x;text-align:right;'><#if inviteData.consult_skill_bottomtitle??>${inviteData.consult_skill_bottomtitle!''}</#if></div>"+
+						"</div></div></#if>" ;
+		append(document.body, '<div class="ukefu-im-point" id="ukefu-point" style="display:none;z-index:100000;font-family:14px \5FAE\8F6F\96C5\9ED1,Helvetica Neue,Helvetica,PingFang SC,Tahoma,Arial,sans-serif;position: fixed;${position};<#if inviteData?? && inviteData.skill == true>cursor:default;<#else>cursor: pointer;</#if>">	<div class="ukefu-point-theme${inviteData.consult_vsitorbtn_model!'1'} ukefu-theme-color theme1" style="${style}${theme}" id="ukefu-point-theme"><div class="ukefu-im-point-text" id="ukefu-im-point-text" style="cursor: pointer;${text};line-height: 23px;font-size: 15px;text-align: center;margin: 0 auto;"><i style="width:24px;height:24px;display: inline-block;font: normal normal normal 14px/1 FontAwesome;font-size: inherit;text-rendering: auto;-webkit-font-smoothing: antialiased;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAB60lEQVRIS7WV4TVsQRCEqyJABkSACBABLwJE8IjAigARIAMieCsCREAGjwja+eb03TO7O9ddrPm1Z29PV3dXdY31y8eL5I+ILUmbktYz/lXSs+2nofu9ABFBsjNJB5JWJT3MJNuR9CbpTtK5bUDnThMgIkaZnKSXtkkydyIC8BNJgI1sn88GzQFExI2kXUlHtsdDI+B7RBDPvUfbf+o7UwCZnHnv2qb9hU9EMEYKAuS4uzgByHapYqtvnkNoyRvE030Zaw0AScz7cijRZ9+Tv33b2xOAlOGjpLWvjmYWLEf1X9I2Mi4dRMRRtgVZ5WTgtaRX26cVmUj3lMtVzEPdeUTARVFfB4AsIbYG4Pe/0qbdxXERSaL7UapnKiYLIW5MTG8HGYjG6aAQlqNE+1RXVBYRUzH5H0SzF5MO2NqXJXHQ5dpAjbWKQL2jrSWo6MA2+zQlU2bOKOBi0MRaRVRq3OtcYHaT2YFDSQR8CSSTQ/itbXgpp+VFgCDbi5Z59ej+L6RKuqqTNwEqvWMbK2li97XxpSXwPhRTlPSOq7Zc99MHJxeQdt+6HcklYhdICmfonWKaZwgAh8RC8HmSXUjCjtcXtZQhAKrHGqiQUTynpTRfr1YLQwBomcq7HekdxbdG9JOF65XpMpLWOT4AygTtGd0Q7EsAAAAASUVORK5CYII=);"></i><br>${(inviteData.consult_vsitorbtn_content!'在线客服')?no_esc}</div></div><#if inviteData?? && inviteData.skill == true>'+skillHtml+'</#if></div>');
+		append(document.body, "<div class='ukefu-im-preview' id='ukefu-invite-dialog' style='display:none;height:177px;position: fixed;z-index:10000;<#if mobile?? && mobile == true>bottom:0px;width:100%;<#else>top:"+top+";width: 420px;left:"+left+";</#if>border-radius: 2px;padding: 0px;overflow: hidden;margin: 0px;${invitetheme!''}'>	<div id='ukefu-cousult-invite-dialog' class='ukefu-im-preview-bar ukefu-cousult-invite-dialog ukefu-theme-color theme1' style='padding:0px;height:100%;width:100%;background-size: cover;background:url(/res/image.html?id=${inviteData.consult_invite_bg}) no-repeat'><a href='javascript:void(0)' onclick='ukefu.refuseInvite();'><span style='float: right;width: 20px;height: 20px;color: #ffffff;font-size: 20px;'>×</span></a><div class='ukefu-cousult-invite-content' id='ukefu-cousult-invite-content' style='color: #FFFFFF;width: 70%;height: 70px;line-height: 35px;font-size: 13pt;font-weight: 200;word-wrap: break-word;word-break: break-all;position: absolute;top: 30px;left: 25%;'>${inviteData.consult_invite_content!'欢迎来到本网站，请问有什么可以帮您？'}</div><div class='ukefu-cousult-invite-btn' style='position: absolute;bottom: 0px;right: 0px;margin: 0px 10px 10px 0px;'><#if inviteData.consult_invite_later?? && inviteData.consult_invite_later != ''><button class='theme1' id='invite-btn' style='border-color:#FFFFFF !important;color:#FFFFFF;display: inline-block;height: 38px;line-height: 38px;padding: 0 18px;background-color: #009688;color: #fff;white-space: nowrap;text-align: center;font-size: 14px;margin-right:10px;border: none;border-radius: 2px;cursor: pointer;opacity: .9;filter: alpha(opacity=90);${invitetheme!''}border:1px solid #FFFFFF;' onclick='ukefu.refuseInvite();'>${inviteData.consult_invite_later}</button></#if><#if inviteData.consult_invite_accept?? && inviteData.consult_invite_accept!=''><button class='' style='display: inline-block;height: 38px;line-height: 38px;padding: 0 18px;background-color: #009688;color: #fff;white-space: nowrap;text-align: center;font-size: 14px;border: none;border-radius: 2px;cursor: pointer;opacity: .9;filter: alpha(opacity=90);background-color:#FFFFFF;color:#333333;' onclick='ukefu.acceptInvite();ukefu.openChatDialog();'>${inviteData.consult_invite_accept}</button></#if></div></div></div>");
+		<#if inviteData?? && inviteData.skill == true>
+			document.getElementById("ukefu-im-point-text").onclick=function(){
+				if(document.getElementById("ichatContent").style.display == "none"){
+					document.getElementById("ichatContent").style.display = 'block';	
+				}else{
+					document.getElementById("ichatContent").style.display = 'none';
+				}
+			}
+		<#else>
+			document.getElementById("ukefu-point").onclick=function(){
+				ukefu.openChatDialog();	
+			}
+		</#if>
+		var inviteDialog =  document.getElementById('ukefu-invite-dialog');
+		<#if mobile?? && mobile == true>
+			inviteDialog.style.bottom = 0 ;
+		<#else>
+			var height = document.documentElement.clientHeight ;
+			var width = document.documentElement.clientWidth ;
+			var top = (50 - 92*100/height)+"%";
+			var left = (50 - 210*100/width)+"%" ;
+			inviteDialog.style.top = top ;
+			inviteDialog.style.left = left ;
+		</#if>
+	},
+	openChatDialog:function(){
+		ukefu.openChatDialogWithURL(ukefu.chat);		
+	},
+	openChatDialogWithURL:function(url){
+		url = url + "&userid="+result+"&sessionid=${sessionid!''}"
+		if(data){
+			if(data.id){
+				url = url + "&id="+data.id ;	
+			}
+			if(data.name){
+				url = url + "&name="+encodeURIComponent(data.name);	
+			}
+			if(data.email){
+				url = url + "&email="+encodeURIComponent(data.email);	
+			}
+			if(data.mobile){
+				url = url + "&mobile="+encodeURIComponent(data.mobile);	
+			}
+		}
+		window.open(url+"&t="+new Date().getTime(), "ukefu-chat", "height=600, width=850, top="+ (window.screen.availHeight - 30 - 600) /2+", left="+(window.screen.availWidth - 10 - 750)/2+",toolbar=no, menubar=no, scrollbars=no, resizable=no, directories=no,location=no, status=no");
+		return false;	
+	},
+	display:function(){
+		ukefu.writepoint();
+		<#if !(inviteData.consult_vsitorbtn_display??) || (inviteData.consult_vsitorbtn_display?? && inviteData.consult_vsitorbtn_display == 0)>
+			document.getElementById("ukefu-point").style.display = "block" ;
+			<#if inviteData.consult_invite_enable>
+				<#if inviteData.consult_invite_delay?? && inviteData.consult_invite_delay == 0>
+					ukefu.writeinvite() ;
+				<#else>
+					setTimeout(function(){
+						ukefu.writeinvite() ;
+					} , ${inviteData.consult_invite_delay});
+				</#if>
+			</#if>
+		<#else>
+			setTimeout(function(){
+				document.getElementById("ukefu-point").style.display = "block" ;
+				<#if inviteData.consult_invite_enable>
+					<#if inviteData.consult_invite_delay?? && inviteData.consult_invite_delay == 0>
+						ukefu.writeinvite() ;
+					<#else>
+						setTimeout(function(){
+							ukefu.writeinvite() ;
+						} , ${inviteData.consult_invite_delay});
+					</#if>
+				</#if>
+			}, ${inviteData.consult_vsitorbtn_display});		//延时显示 访客入口
+		</#if>	
+	},
+	writeinvite:function(){
+		document.getElementById('ukefu-invite-dialog').style.display = "block" ;	
+	},
+	refuseInvite:function(){
+		document.getElementById('ukefu-invite-dialog').style.display = "none" ;
+		ukefu.ajax(ukefu.refuse + "&userid="+result+"&sessionid=${sessionid!''}&t="+new Date().getTime());
+	},
+	acceptInvite:function(){
+		document.getElementById('ukefu-invite-dialog').style.display = "none" ;
+	},
+	check:function(){
+		var checkTimes = 0 ;
+		setInterval(function(){
+			if(signal <= 0){
+				checkTimes++ ;
+			}else{
+				checkTimes = 0 ;
+			}
+			if(checkTimes >= 3){	//检查当前的 Keep-Alive是否存活，检查3次都处于未存活状态，则启动
+				//
+				signal = 0 ;
+				checkTimes = 0 ;
+				ukefu.ping();
+				console.log("优客服客户端信息校对");
+			}
+		},5000) ;	
+	}
+}
+
+function openAgentChatDialog(url){
+	return ukefu.openChatDialogWithURL(url);	
+}
+
+ukefu.ajax(ukefu.in+"&userid="+result+"&t="+new Date().getTime() , function(data){
+	if(data == "in"){}else{
+		ukefu.display();
+		ukefu.ping();
+		ukefu.check();
+	}
+});
+
+
+
+</#if>
+
+

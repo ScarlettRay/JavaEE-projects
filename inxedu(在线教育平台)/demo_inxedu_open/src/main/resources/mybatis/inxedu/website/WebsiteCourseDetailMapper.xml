@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WebsiteCourseDetailMapper">
+
+	<resultMap type="WebsiteCourseDetail" id="WebsiteCourseDetailResult">
+	<result property="id" column="ID"/>
+	<result property="recommendId" column="RECOMMEND_ID"/>
+	<result property="courseId" column="COURSE_ID"/>
+	<result property="orderNum" column="ORDER_NUM"/>
+	</resultMap>
+	<resultMap type="WebsiteCourseDetailDTO" id="WebsiteCourseDetailDTOResult">
+	<result property="id" column="ID"/>
+	<result property="courseName" column="COURSE_NAME"/>
+	<result property="recommendName" column="NAME"/>
+	<result property="orderNum" column="ORDER_NUM"/>
+	<result property="isavaliable" column="IS_AVALIABLE"/>
+		<result property="endTime" column="end_time"/>
+		<result property="loseTime" column="lose_time"/>
+	</resultMap>
+	<sql id="edu_website_course_detail_dto_column">
+	EDU_WEBSITE_COURSE_DETAIL.ID,
+	EDU_COURSE.COURSE_NAME,
+	EDU_WEBSITE_COURSE.NAME,
+	EDU_WEBSITE_COURSE_DETAIL.ORDER_NUM,
+	EDU_COURSE.IS_AVALIABLE,
+	EDU_COURSE.end_time,
+	EDU_COURSE.lose_time
+	</sql>
+	<sql id="edu_website_course_detail_column">
+	EDU_WEBSITE_COURSE_DETAIL.ID,
+	EDU_WEBSITE_COURSE_DETAIL.RECOMMEND_ID,
+	EDU_WEBSITE_COURSE_DETAIL.COURSE_ID,
+	EDU_WEBSITE_COURSE_DETAIL.ORDER_NUM
+	</sql>
+	<sql id="edu_website_course_detail_property">
+	#{id},
+	#{recommendId},
+	#{courseId},
+	#{orderNum}
+	</sql>
+	
+	<!-- 创建推荐课程 -->
+	<insert id="createWebsiteCourseDetail" parameterType="java.lang.String">
+	INSERT INTO EDU_WEBSITE_COURSE_DETAIL(<include refid="edu_website_course_detail_column"/>)
+	VALUES ${value}
+	</insert>
+	
+	<!-- 分页查询推荐课程，开始 -->
+	<select id="queryCourseDetailPage" parameterType="java.util.Map" resultMap="WebsiteCourseDetailDTOResult">
+	SELECT <include refid="edu_website_course_detail_dto_column"/>
+	FROM EDU_WEBSITE_COURSE_DETAIL
+	LEFT JOIN EDU_WEBSITE_COURSE ON EDU_WEBSITE_COURSE.ID = EDU_WEBSITE_COURSE_DETAIL.RECOMMEND_ID
+	LEFT JOIN EDU_COURSE ON EDU_COURSE.COURSE_ID=EDU_WEBSITE_COURSE_DETAIL.COURSE_ID
+	<where>
+	<if test="e.isavaliable>0">
+	EDU_COURSE.IS_AVALIABLE=#{e.isavaliable}
+	</if>
+	<if test="e.id>0">
+	AND EDU_WEBSITE_COURSE_DETAIL.RECOMMEND_ID=#{e.id}
+	</if>
+	<if test="e.courseName!=null and e.courseName!=''">
+	AND EDU_COURSE.COURSE_NAME LIKE CONCAT('%',#{e.courseName},'%')
+	</if>
+	</where>
+	ORDER BY EDU_WEBSITE_COURSE_DETAIL.ORDER_NUM DESC
+	<include refid="publicMapper.pageEnd"/>
+	</select>
+	<select id="queryCourseDetailPageCount" parameterType="java.util.Map" resultType="int">
+	SELECT COUNT(1) FROM EDU_WEBSITE_COURSE_DETAIL
+	LEFT JOIN EDU_WEBSITE_COURSE ON EDU_WEBSITE_COURSE.ID = EDU_WEBSITE_COURSE_DETAIL.RECOMMEND_ID
+	LEFT JOIN EDU_COURSE ON EDU_COURSE.COURSE_ID=EDU_WEBSITE_COURSE_DETAIL.COURSE_ID
+	<where>
+	<if test="e.isavaliable>0">
+	EDU_COURSE.IS_AVALIABLE=#{e.isavaliable}
+	</if>
+	<if test="e.id>0">
+	AND EDU_WEBSITE_COURSE_DETAIL.RECOMMEND_ID=#{e.id}
+	</if>
+	<if test="e.courseName!=null and e.courseName!=''">
+	AND EDU_COURSE.COURSE_NAME LIKE CONCAT('%',#{e.courseName},'%')
+	</if>
+	</where>
+	</select>
+	<!-- 分页查询推荐课程，结束-->
+	
+	<!-- 删除推荐课程 -->
+	<delete id="deleteDetailById" parameterType="int">
+	DELETE FROM EDU_WEBSITE_COURSE_DETAIL WHERE ID=#{value}
+	</delete>
+	
+	<!-- 通过分类删除推荐课程 -->
+	<delete id="delWebsiteCourseDetails" parameterType="int">
+	DELETE FROM EDU_WEBSITE_COURSE_DETAIL WHERE RECOMMEND_ID=#{value}
+	</delete>
+	
+	<!-- 修改推荐课程排序值 -->
+	<update id="updateSort" parameterType="java.util.Map">
+	UPDATE EDU_WEBSITE_COURSE_DETAIL SET ORDER_NUM=#{sort} WHERE ID=#{id}
+	</update>
+	
+	<select id="queryDetailListByrecommendId" parameterType="int" resultMap="WebsiteCourseDetailResult">
+	SELECT <include refid="edu_website_course_detail_column"/> FROM EDU_WEBSITE_COURSE_DETAIL WHERE RECOMMEND_ID=#{value}
+	</select>
+</mapper>

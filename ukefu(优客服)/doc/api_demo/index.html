@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="Generator" content="EditPlus®">
+        <meta name="Author" content="">
+        <meta name="Keywords" content="">
+        <meta name="Description" content="">
+		<script src="js/jquery-1.10.2.min.js"></script>
+        <title>优客服API Demo</title>
+		<script language="javascript">
+			var authorization ;
+			var demo =  {
+				login:function(username , password){
+					$.post("http://127.0.0.1/tokens" , "username=admin&password=123456" , function(data){
+						authorization = data ;
+					})
+				},
+				ajax:function(url , callback){
+					$.ajax({
+						type: "get",
+						url:url , 
+						headers:{"authorization":authorization},
+						success: function (data) {
+							console.log(data);
+							alert("token:"+data);
+						}
+					});
+
+				},
+				createWorkOrder:function(){
+					var param = 'title=测试API创建工单&authorization='+authorization;
+					$.ajax({
+						type: "PUT",
+						url:"http://127.0.0.1/api/workorders" , 
+						data: param,
+						success: function (data) {
+							console.log(data);
+							alert("token:"+data);
+						}
+					});
+				},
+				createContacts:function(){
+					var param = 'name=张天翼&authorization='+authorization;
+					$.ajax({
+						type: "PUT",
+						url:"http://127.0.0.1/api/contacts" , 
+						data: param,
+						success: function (data) {
+							console.log(data);
+							alert("token:"+data);
+						}
+					});
+				},
+				getUser:function(current){
+					demo.ajax("http://127.0.0.1/api/user?username="+current,function(data){
+						console.log(data);
+						alert(data);
+					});
+				}
+			}
+			$(document).ready(function(){
+				demo.login();
+			});
+		</script>
+	</head>
+    
+    <body>
+		<a href="javascript:void(0)" onclick="demo.getUser('admin')">获取当前登录用户信息</a>
+
+		<a href="javascript:void(0)" onclick="demo.createWorkOrder()">创建工单</a>
+
+		<a href="javascript:void(0)" onclick="demo.createContacts()">创建联系人</a>
+	</body>
+
+</html>

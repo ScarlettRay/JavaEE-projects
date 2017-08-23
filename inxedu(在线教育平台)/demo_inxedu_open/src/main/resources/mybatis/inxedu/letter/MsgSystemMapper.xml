@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MsgSystemMapper">
+
+	<resultMap id="MsgSystemResult" type="MsgSystem">
+		<result property="id" column="id" />
+		<result property="addTime" column="add_TIME" />
+		<result property="updateTime" column="update_time" />
+		<result property="content" column="content" />
+		<result property="status" column="status" />
+	</resultMap>
+
+	<sql id="edu_msg_system_columns">
+		edu_msg_system.id,
+		edu_msg_system.add_Time,
+		edu_msg_system.update_time,
+		edu_msg_system.content,
+		edu_msg_system.status
+	</sql>
+
+	<sql id="edu_msg_system_properties">
+		#{id},
+		#{addTime},
+		#{updateTime},
+		#{content},
+		#{status}
+	</sql>
+	<!-- 添加站内信发件箱 -->
+	<insert id="addMsgSystem" parameterType="java.util.HashMap"
+		useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		INSERT INTO edu_msg_system (
+		<include refid="edu_msg_system_columns" />
+		) VALUES (
+		<include refid="edu_msg_system_properties" />
+		)
+	</insert>
+
+
+	<select id="queryMsgSystemList" parameterType="java.util.HashMap"
+		resultMap="MsgSystemResult">
+		select
+		<include refid="edu_msg_system_columns" />
+		from
+		edu_msg_system
+		<where>
+			<if test="e.content!=null and e.content!=''">
+				and edu_msg_system.content LIKE
+				CONCAT('%',#{e.content},'%')
+			</if>
+			<if test="e.addTime != null and e.addTime != ''">
+				<![CDATA[and edu_msg_system.add_time >#{e.addTime}]]>
+			</if>
+			<if test="e.endTime!=null and e.endTime!=''">
+				<![CDATA[and edu_msg_system.add_time <#{e.endTime}]]>
+			</if>
+			<if test="e.status != -1">
+				and edu_msg_system.status = #{e.status}
+			</if>
+		</where>
+		order by edu_msg_system.id desc
+		<include refid="publicMapper.pageEnd" />
+	</select>
+
+	<select id="queryMsgSystemListCount" parameterType="java.util.HashMap"
+		resultType="int">
+		select
+		<include refid="edu_msg_system_columns" />
+		from
+		edu_msg_system
+		<where>
+			<if test="e.content!=null and e.content!=''">
+				and edu_msg_system.content LIKE
+				CONCAT('%',#{e.content},'%')
+			</if>
+			<if test="e.addTime != null and e.addTime != ''">
+				<![CDATA[and edu_msg_system.add_time >#{e.addTime}]]>
+			</if>
+			<if test="e.endTime!=null and e.endTime!=''">
+				<![CDATA[and edu_msg_system.add_time <#{e.endTime}]]>
+			</if>
+			<if test="e.status != -1">
+				and edu_msg_system.status = #{e.status}
+			</if>
+		</where>
+	</select>
+
+	<update id="delMsgSystemById" parameterType="String">
+		update  edu_msg_system set status = 1 WHERE id in (${value})
+	</update>
+	
+	<select id="queryMSListByLT" parameterType="java.util.HashMap"
+		resultMap="MsgSystemResult">
+		select
+		<include refid="edu_msg_system_columns" />
+		from
+		edu_msg_system
+		<where>
+			edu_msg_system.status = 0
+			<if test="lastTime!=null">
+				and <![CDATA[edu_msg_system.add_time>#{lastTime}]]>
+			</if>
+		</where>
+	</select>
+	
+	<update id="updateMsgSystemPastTime" parameterType="java.util.HashMap">
+		update  edu_msg_system 
+		set status = 2 
+		WHERE
+		<![CDATA[edu_msg_system.add_time<#{lastTime}]]>
+	</update>
+</mapper>

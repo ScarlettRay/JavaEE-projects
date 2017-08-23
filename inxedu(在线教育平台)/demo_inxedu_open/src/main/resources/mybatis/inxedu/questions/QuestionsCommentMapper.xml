@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="QuestionsCommentMapper">
+
+	<resultMap id="QuestionsCommentResult" type="QuestionsComment">
+		<result property="id" column="ID" />
+		<result property="cusId" column="CUS_ID" />
+		<result property="questionId" column="QUESTION_ID" />
+		<result property="content" column="CONTENT" />
+		<result property="isBest" column="IS_BEST" />
+		<result property="replyCount" column="REPLY_COUNT" />
+		<result property="praiseCount" column="PRAISE_COUNT" />
+		<result property="addTime" column="ADD_TIME" />
+		<result property="commentId" column="COMMENT_ID" />
+		
+		<result property="showName" column="showName" />
+		<result property="email" column="email" />
+		<result property="picImg" column="picImg" />
+		<result property="questionsTitle" column="questionsTitle" />
+		<result property="questionsStatus" column="questionsStatus" />
+	</resultMap>
+
+	<sql id="edu_questions_comment_columns">
+		edu_questions_comment.ID,
+		edu_questions_comment.CUS_ID,
+		edu_questions_comment.QUESTION_ID,
+		edu_questions_comment.CONTENT,
+		edu_questions_comment.IS_BEST,
+		edu_questions_comment.REPLY_COUNT,
+		edu_questions_comment.PRAISE_COUNT,
+		edu_questions_comment.ADD_TIME,
+		edu_questions_comment.COMMENT_ID
+	</sql>
+
+	<sql id="edu_questions_comment_properties">
+		#{id},
+		#{cusId},
+		#{questionId},
+		#{content},
+		#{isBest},
+		#{replyCount},
+		#{praiseCount},
+		#{addTime},
+		#{commentId}
+	</sql>
+
+	<insert id="createQuestionsComment" parameterType="QuestionsComment" keyColumn="ID" keyProperty="id">
+		insert INTO edu_questions_comment (
+		<include refid="edu_questions_comment_columns" />
+		) VALUES (
+		<include refid="edu_questions_comment_properties" />
+		)
+	</insert>
+
+	<delete id="deleteQuestionsCommentById" parameterType="long">
+		delete from
+		edu_questions_comment
+		where
+		id = #{value}
+	</delete>
+
+	<update id="updateQuestionsComment" parameterType="QuestionsComment">
+		update
+		edu_questions_comment SET
+		ID = #{id},
+		CUS_ID = #{cusId},
+		QUESTION_ID = #{questionId},
+		CONTENT = #{content},
+		IS_BEST = #{isBest},
+		REPLY_COUNT = #{replyCount},
+		PRAISE_COUNT = #{praiseCount},
+		ADD_TIME = #{addTime}
+		where ID = #{id}
+	</update>
+
+	<select id="getQuestionsCommentById" resultMap="QuestionsCommentResult"
+		parameterType="long">
+		select
+		<include refid="edu_questions_comment_columns" />
+		,edu_user.SHOW_NAME as showName,edu_user.EMAIL as email ,edu_user.PIC_IMG as picImg
+		from edu_questions_comment
+		left join edu_user on edu_user.USER_ID=edu_questions_comment.CUS_ID
+		where
+		id = #{value}
+	</select>
+
+	<select id="getQuestionsCommentList" resultMap="QuestionsCommentResult"
+		parameterType="QuestionsComment">
+		select
+		<include refid="edu_questions_comment_columns" />
+		,edu_user.SHOW_NAME as showName,edu_user.EMAIL as email ,edu_user.PIC_IMG as picImg
+		from edu_questions_comment
+		left join edu_user on edu_user.USER_ID=edu_questions_comment.CUS_ID
+		<where>
+			<if test="isBest!= -1">
+				and edu_questions_comment.IS_BEST = #{isBest}
+			</if>
+			<if test="questionId != null and questionId != 0" >  
+				and edu_questions_comment.QUESTION_ID = #{questionId}
+			</if>
+			<if test="commentId != null and commentId != 0" >  
+				and edu_questions_comment.COMMENT_ID = #{commentId}
+			</if>
+		</where>
+		<if test="orderFlag=='new'">
+			order by edu_questions_comment.ADD_TIME desc
+		</if>
+		<if test="limitSize!=0">
+			limit #{limitSize}
+		</if>
+	</select>
+
+
+	<select id="queryQuestionsCommentListByQuestionsId" resultMap="QuestionsCommentResult"
+		parameterType="java.util.HashMap">
+		select
+		<include refid="edu_questions_comment_columns" />
+		,edu_user.SHOW_NAME as showName,edu_user.EMAIL as email ,edu_user.PIC_IMG as picImg
+		from edu_questions_comment
+		left join edu_user on edu_user.USER_ID=edu_questions_comment.CUS_ID
+		where edu_questions_comment.QUESTION_ID = #{e.questionId}
+		<if test="e.isBest != -1" >  
+			and edu_questions_comment.IS_BEST = #{e.isBest}
+		</if>
+		order by edu_questions_comment.ADD_TIME desc
+		<include refid="publicMapper.pageEnd" />
+	</select>
+
+	<select id="queryQuestionsCommentListByQuestionsIdCount"
+		resultType="int" parameterType="java.util.HashMap">
+		select
+		count(1)
+		from edu_questions_comment
+		where edu_questions_comment.QUESTION_ID = #{e.questionId}
+		<if test="e.isBest != -1" >  
+			and edu_questions_comment.IS_BEST = #{e.isBest}
+		</if>
+	</select>
+	
+	<!-- 根据问答id删除QuestionsComment -->
+	<delete id="delQuestionsCommentByQuestionId" parameterType="long">
+		delete from
+		edu_questions_comment
+		where
+		QUESTION_ID = #{value}
+	</delete>
+	
+	
+	<select id="queryQuestionsCommentList" resultMap="QuestionsCommentResult"
+		parameterType="java.util.HashMap">
+		select
+		<include refid="edu_questions_comment_columns" />
+		,edu_user.SHOW_NAME as showName,edu_user.EMAIL as email ,edu_user.PIC_IMG as picImg
+        ,edu_questions.TITLE as questionsTitle,edu_questions.STATUS as questionsStatus
+		from edu_questions_comment
+		left join edu_user on edu_user.USER_ID=edu_questions_comment.CUS_ID
+        left join edu_questions on edu_questions.ID = edu_questions_comment.QUESTION_ID
+        where edu_questions_comment.QUESTION_ID!=0
+		<if test="e.questionId != null and e.questionId !='' " >  
+			and edu_questions_comment.QUESTION_ID = #{e.questionId}
+		</if>
+		<if test="e.questionsTitle !=null and e.questionsTitle !=''">
+			and <![CDATA[ edu_questions.TITLE like CONCAT('%',#{e.questionsTitle},'%') ]]>
+		</if>
+		<if test="e.beginCreateTime!=null and e.beginCreateTime!='' ">
+             AND <![CDATA[edu_questions_comment.ADD_TIME>#{e.beginCreateTime} ]]>
+         </if>
+         <if test="e.endCreateTime!=null and e.endCreateTime!='' ">
+             AND <![CDATA[edu_questions_comment.ADD_TIME<#{e.endCreateTime} ]]>
+         </if>
+         <if test="e.isBest != -1" >  
+			and edu_questions_comment.IS_BEST = #{e.isBest}
+		</if>
+		order by edu_questions_comment.ADD_TIME desc
+	</select>
+	
+	<!-- 根据问答回复id删除QuestionsComment -->
+	<delete id="delQuestionsCommentByCommentId" parameterType="long">
+		delete from
+		edu_questions_comment
+		where
+		edu_questions_comment.COMMENT_ID = #{value}
+	</delete>
+	
+</mapper>

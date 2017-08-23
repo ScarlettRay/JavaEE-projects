@@ -1,0 +1,27 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>ie shit</title>
+<script type="text/javascript">
+		function getParameter(val) {
+			var uri = window.location.search;
+			var re = new RegExp("" + val + "=([^&?]*)", "ig");
+			return ((uri.match(re)) ? (uri.match(re)[0].substr(val.length + 1)) : null);
+		}
+		    
+		var upload_callback = function(){
+			var data=getParameter("s");
+			var location_hash=location.hash;
+			if(location_hash!=null && location_hash!="" && location_hash){
+				var data = location.hash ? location.hash.substring(1) : '';
+				document.getElementsByTagName("body")[0].innerHTML = '<pre>' + data  + '</pre>';
+			}else{
+				var data=getParameter("s");
+				document.getElementsByTagName("body")[0].innerHTML = '<pre>' + data  + '</pre>';
+			}
+		};
+    </script>
+</head>
+<body onload="upload_callback();">
+</body>
+</html>

@@ -1,0 +1,180 @@
+/*---======== /frame_headStyle ========---*/
+a {
+	text-decoration: none;
+	color: #555;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #2DA2A7;
+}
+
+a:focus {
+	outline: none;
+	-moz-outline: none;
+}
+
+a:active {
+	outline: none;
+	blr: expression(this.onFocus = this.blur ())
+}
+
+a, img {
+	border: 0 none;
+}
+
+#header {
+	height: 117px;
+	width: 100%;
+}
+
+#layout {
+	height: auto;
+	width: 100%;
+}
+
+#main_content {
+	height: auto ! important;
+	padding: 20px;
+	position: relative;
+	margin-left: 180px;
+	*zoom: 1;
+}
+
+#left_menu {
+	left: 0;
+	top: 118px;
+	position: absolute;
+	width: 180px;
+	*zoom: 1;
+}
+
+.topWrap {
+	height: 100%;
+	position: relative;
+	width: 100%;
+}
+
+#nav {
+	padding: 0 180px;
+	height: 100%;
+	width: auto;
+}
+
+#logo {
+	position: absolute;
+	left: 0;
+}
+
+#logo h1 {
+	display: table-cell; +
+	display: block;
+	text-align: center;
+	height: 117px;
+	width: 180px;
+	vertical-align: middle;
+}
+
+#logo h1 a img { +
+	display: inline-block;
+}
+
+#topRight {
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: 107px;
+	width: 180px;
+}
+
+.twoBtn {
+	margin: 25px 0 15px;
+}
+
+.twoBtn span {
+	vertical-align: middle;
+	margin: 0 10px;
+}
+
+.twoBtn span a {
+	color: #aaa;
+	font-family: 'Microsoft YaHei';
+	vertical-align: middle;
+	margin-left: 2px;
+}
+
+.twoBtn span a:hover {
+	color: #2DA2A7;
+	text-decoration: none;
+	transition: 0.6s;
+}
+
+.adminUser {
+	color: #2DA2A7;
+	text-align: center;
+	padding: 0 15px;
+	line-height: 30px;
+}
+
+.navWrap {
+	position: relative;
+	padding: 25px 20px;
+}
+
+.navList {
+	overflow: hidden;
+	height: 70px;
+	width: 1430px;
+}
+
+.navList ul {
+	overflow: hidden;
+}
+
+.navList li {
+	float: left;
+	overflow: hidden;
+	height: 58px;
+	padding-top: 12px;
+	width: 108px;
+	text-align: center;
+}
+
+.navList li a:hover {
+	color: #2DA2A7;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.navList li a:hover .n_txt, .navList li.selected a .n_txt {
+	color: #2DA2A7;
+}
+
+.n_txt {
+	color: #777;
+	font: 14px/24px 'Microsoft YaHei';
+}
+
+.navWrap a.prev, .navWrap a.next {
+	display: inline-block;
+	position: absolute;
+	height: 70px;
+	width: 12px;
+	overflow: hidden;
+}
+
+.navWrap a.prev {
+	left: 0;
+	top: 50%;
+	margin-top: -35px;
+}
+
+.navWrap a.next {
+	right: 0;
+	top: 50%;
+	margin-top: -35px;
+}
+
+.navWrap a.prev:hover, .navWrap a.next:hover {
+	text-decoration: none;
+}

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd" default-autowire="byName">
+   
+    <!-- 网站统计定时器 -->
+    <bean id="statisticsJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean" lazy-init="false">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject">
+                    <ref bean="statisticsDayService" />
+                </property>
+                <property name="targetMethod">
+                    <value>addStatisticsDayAuto</value>
+                </property>
+                <property name="concurrent">
+                    <value>true</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <value>0 10 0 * * ?</value><!-- 每天0点10触发 -->
+        </property>
+    </bean>
+
+    <!-- 邮箱每5分钟查询一次数据库进行发送邮箱和短信 -->
+    <bean id="sendEmailMsg" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject">
+                    <ref bean="userEmailMsgService" />
+                </property>
+                <property name="targetMethod">
+                    <value>queryTimingSendEmailMsg</value>
+                </property>
+                <property name="concurrent">
+                    <value>false</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <value>0 */1 * * * ?</value><!--  每天凌晨0点40触发  -->
+        </property>
+    </bean>
+
+    <!-- 站内信过期消息删除 每天执行一次 -->
+    <bean id="delMsgJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject">
+                    <ref bean="msgSystemService" />
+                </property>
+                <property name="targetMethod">
+                    <value>updatePast</value>
+                </property>
+                <property name="concurrent">
+                    <value>false</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <value>0 40 0 * * ?</value><!--  每天凌晨0点40触发  -->
+        </property>
+    </bean>
+
+	<!-- 定时器配置 lazy-init='false'-->
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean"  lazy-init="false" autowire="no"> 
+		<property name="triggers"> 
+			<list> 
+               <!-- 统计数据每天晚上生成statisticsJob-->
+               <ref bean="statisticsJob"/>
+                <!-- 邮箱每1分钟查询一次数据库进行发送邮箱和短信 -->
+                <ref bean="sendEmailMsg"/>
+                <!-- 站内信过期消息删除 每天执行一次 -->
+                <ref bean="delMsgJob"/>
+			</list>
+		</property> 
+	</bean>
+
+
+	
+</beans>

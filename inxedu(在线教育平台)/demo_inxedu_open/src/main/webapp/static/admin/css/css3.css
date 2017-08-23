@@ -1,0 +1,38 @@
+/* CSS 3 setup */
+/* ----------- */
+@font-face {
+	font-family: "Modata";
+	src: url('Modata.ttf');
+}
+
+fieldset, input, textarea, select, a.button, .meta ul li a, ul.nav li li a:hover,
+	p.main input, input.login, table, .message, #easyTooltip, div.wysiwyg {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+ul.nav li a {
+	text-shadow: -1px 1px #000;
+}
+
+ul.nav li a:hover {
+	text-shadow: none !important;
+}
+
+ul.nav li li a {
+	text-shadow: none;
+}
+
+.portlet {
+	zoom: 1;
+}
+
+div.wysiwyg ul.panel li a {
+	opacity: 0.85;
+	filter: alpha(opacity = 85);
+}
+
+div.wysiwyg ul.panel li a:hover, div.wysiwyg ul.panel li a.active {
+	opacity: 1.00;
+	filter: alpha(opacity = 100);
+}

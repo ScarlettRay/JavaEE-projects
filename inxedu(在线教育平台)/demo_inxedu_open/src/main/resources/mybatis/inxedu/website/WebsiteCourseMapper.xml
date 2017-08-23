@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WebsiteCourseMapper">
+
+	<resultMap id="WebsiteCourseResult" type="WebsiteCourse">
+	<result property="id" column="ID" />
+	<result property="name" column="NAME" />
+	<result property="link" column="LINK" />
+	<result property="description" column="DESCRIPTION" />
+	<result property="courseNum" column="COURSENUM" />
+	</resultMap>
+
+	<sql id="edu_website_course_columns">
+	EDU_WEBSITE_COURSE.ID,
+	EDU_WEBSITE_COURSE.NAME,
+	EDU_WEBSITE_COURSE.LINK,
+	EDU_WEBSITE_COURSE.DESCRIPTION,
+	EDU_WEBSITE_COURSE.COURSENUM
+	</sql>
+
+	<sql id="edu_website_course_properties">
+	#{id},
+	#{name},
+	#{link},
+	#{description},
+	#{courseNum}
+	</sql>
+	<!-- 添加推荐课程分类 -->
+	<insert id="createWebsiteCourse" parameterType="WebsiteCourse" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+	INSERT INTO EDU_WEBSITE_COURSE(<include refid="edu_website_course_columns"/>) 
+	VALUES(<include refid="edu_website_course_properties" />)
+	</insert>
+	<!-- 删除推荐课程分类 -->
+	<delete id="deleteWebsiteCourseById" parameterType="int">
+	DELETE FROM EDU_WEBSITE_COURSE WHERE ID = #{value}
+	</delete>
+	
+	<!-- 更新推荐课程分类 -->
+	<update id="updateWebsiteCourse" parameterType="WebsiteCourse">
+	UPDATE EDU_WEBSITE_COURSE SET
+	EDU_WEBSITE_COURSE.NAME = #{name},
+	EDU_WEBSITE_COURSE.LINK = #{link},
+	EDU_WEBSITE_COURSE.DESCRIPTION = #{description},
+	EDU_WEBSITE_COURSE.COURSENUM = #{courseNum}
+	WHERE
+	EDU_WEBSITE_COURSE.ID = #{id}
+	</update>
+	
+	<!-- id查询推荐课程分类 -->
+	<select id="getWebsiteCourseById" resultMap="WebsiteCourseResult" parameterType="int">
+		SELECT <include refid="edu_website_course_columns" /> FROM EDU_WEBSITE_COURSE WHERE EDU_WEBSITE_COURSE.ID = #{value}
+	</select>
+	
+	<!-- 推荐课程分类列表 -->
+	<select id="queryWebsiteCourseList" resultMap="WebsiteCourseResult">
+		SELECT <include refid="edu_website_course_columns" /> FROM EDU_WEBSITE_COURSE
+	</select>
+</mapper>

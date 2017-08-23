@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="publicMapper" >
+	<!-- mysql分页通用结尾 -->
+	<sql id="pageEnd">
+		limit #{page.offsetPara,jdbcType=INTEGER} ,#{page.limitPara,jdbcType=INTEGER} 
+	</sql>
+	
+    <sql id="like_left">
+        concat('%',
+    </sql>
+
+    <sql id="like_right">
+        ,'%')
+    </sql>
+
+    <sql id="increment_sql">
+        select LAST_INSERT_ID() as value
+    </sql>
+</mapper>

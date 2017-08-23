@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SubjectMapper">
+
+	<resultMap id="SubjectResult" type="Subject">
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="subjectName" column="SUBJECT_NAME" />
+		<result property="status" column="STATUS" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="parentId" column="PARENT_ID" />
+		<result property="sort" column="sort" />
+	</resultMap>
+
+	<sql id="sys_subject_columns">
+		SYS_SUBJECT.SUBJECT_ID,
+		SYS_SUBJECT.SUBJECT_NAME,
+		SYS_SUBJECT.STATUS,
+		SYS_SUBJECT.CREATE_TIME,
+		SYS_SUBJECT.PARENT_ID,
+		SYS_SUBJECT.sort
+	</sql>
+
+	<sql id="sys_subject_properties">
+		#{subjectId},
+		#{subjectName},
+		#{status},
+		#{createTime},
+		#{parentId},
+		#{sort}
+	</sql>
+
+	<!-- 添加专业 -->
+	<insert id="createSubject" parameterType="Subject" useGeneratedKeys="true" keyColumn="SUBJECT_ID" keyProperty="subjectId">
+		INSERT INTO SYS_SUBJECT (
+		<include refid="sys_subject_columns" />
+		)
+		VALUES (
+		<include refid="sys_subject_properties" />
+		)
+	</insert>
+
+	<!-- 查询所有专业列表 -->
+	<select id="getSubjectList" parameterType="QuerySubject" resultMap="SubjectResult">
+		SELECT
+		<include refid="sys_subject_columns" />
+		FROM SYS_SUBJECT
+		WHERE SYS_SUBJECT.STATUS=0
+		<if test="parentId>-1">
+			AND SYS_SUBJECT.PARENT_ID = #{parentId}
+		</if>
+		<if test="subjectId!=null and subjectId!=-1">
+			AND SYS_SUBJECT.SUBJECT_ID=#{subjectId}
+		</if>
+		ORDER BY sort desc
+	</select>
+	<!-- 修改专业父ID -->
+	<update id="updateSubjectParentId" parameterType="java.util.Map">
+		UPDATE SYS_SUBJECT SET
+		SYS_SUBJECT.PARENT_ID=#{parentId}
+		WHERE SYS_SUBJECT.SUBJECT_ID=#{subjectId}
+	</update>
+	<!-- 修改专业名 -->
+	<update id="updateSubject" parameterType="Subject">
+		UPDATE SYS_SUBJECT SET
+		SYS_SUBJECT.SUBJECT_NAME=#{subjectName}
+		WHERE SYS_SUBJECT.SUBJECT_ID=#{subjectId}
+	</update>
+	<!-- 设置专业的状态为删除状态 -->
+	<update id="deleteSubject" parameterType="int">
+		UPDATE SYS_SUBJECT SET STATUS=1
+		WHERE
+		SYS_SUBJECT.SUBJECT_ID=#{value}
+		or SYS_SUBJECT.PARENT_ID=#{value}
+	</update>
+
+	<update id="updateSubjectSort" parameterType="Subject">
+		UPDATE SYS_SUBJECT SET
+		SYS_SUBJECT.sort=#{sort}
+		WHERE SYS_SUBJECT.SUBJECT_ID=#{subjectId}
+	</update>
+	
+	<!-- 根据父级ID查找子项目集合 -->
+	<select id="getSubjectListByOne" parameterType="Long" resultMap="SubjectResult">
+ 		select <include refid="sys_subject_columns" /> 
+ 			from sys_subject 
+ 		where 
+ 			parent_id=#{value,jdbcType=INTEGER} and status=0
+ 	</select>
+ 	
+ 	<select id="getSubjectBySubject" parameterType="Subject" resultMap="SubjectResult">
+ 		select <include refid="sys_subject_columns" />
+ 			from sys_subject
+ 		where
+ 			subject_Id=#{subjectId,jdbcType=INTEGER}
+ 	</select>
+</mapper>

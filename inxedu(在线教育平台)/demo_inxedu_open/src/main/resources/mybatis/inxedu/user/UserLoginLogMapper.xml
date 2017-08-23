@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="UserLoginLogMapper" >
+	<sql id="edu_user_login_log_column">
+	EDU_USER_LOGIN_LOG.LOG_ID,
+	EDU_USER_LOGIN_LOG.LOGIN_TIME,
+	EDU_USER_LOGIN_LOG.IP,
+	EDU_USER_LOGIN_LOG.USER_ID,
+	EDU_USER_LOGIN_LOG.OS_NAME,
+	EDU_USER_LOGIN_LOG.USER_AGENT
+	</sql>
+	<sql id="edu_user_login_log_property">
+	#{logId},
+	#{loginTime},
+	#{ip},
+	#{userId},
+	#{osName},
+	#{userAgent}
+	</sql>
+	<resultMap type="UserLoginLog" id="UserLoginLogResult">
+	<result property="logId" column="LOG_ID"/>
+	<result property="loginTime" column="LOGIN_TIME"/>
+	<result property="ip" column="IP"/>
+	<result property="userId" column="USER_ID"/>
+	<result property="osName" column="OS_NAME"/>
+	<result property="userAgent" column="USER_AGENT"/>
+	</resultMap>
+	<insert id="createLoginLog" parameterType="UserLoginLog" keyColumn="LOG_ID" keyProperty="logId" useGeneratedKeys="true">
+		INSERT INTO EDU_USER_LOGIN_LOG(<include refid="edu_user_login_log_column"/>)
+		VALUE(<include refid="edu_user_login_log_property"/>)
+	</insert>
+	
+	<select id="queryUserLogPage" parameterType="java.util.Map" resultMap="UserLoginLogResult">
+		SELECT <include refid="edu_user_login_log_column"/> FROM EDU_USER_LOGIN_LOG
+		WHERE EDU_USER_LOGIN_LOG.USER_ID=#{e}
+		ORDER BY EDU_USER_LOGIN_LOG.LOGIN_TIME DESC
+		<include refid="publicMapper.pageEnd"/>
+	</select>
+	<select id="queryUserLogPageCount" parameterType="java.util.Map" resultType="int">
+		SELECT COUNT(1) FROM EDU_USER_LOGIN_LOG WHERE EDU_USER_LOGIN_LOG.USER_ID=#{e}
+	</select>
+</mapper>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserMapper">
+	<sql id="edu_user_column">
+	EDU_USER.USER_ID,
+	EDU_USER.MOBILE,
+	EDU_USER.EMAIL,
+	EDU_USER.PASSWORD,
+	EDU_USER.USER_NAME,
+	EDU_USER.SHOW_NAME,
+	EDU_USER.SEX,
+	EDU_USER.AGE,
+	EDU_USER.CREATE_TIME,
+	EDU_USER.IS_AVALIBLE,
+	EDU_USER.PIC_IMG,
+	EDU_USER.BANNER_URL,
+	EDU_USER.MSG_NUM,
+	EDU_USER.SYS_MSG_NUM,
+	EDU_USER.LAST_SYSTEM_TIME
+	</sql>
+	<sql id="edu_user_property">
+	#{userId},
+	#{mobile},
+	#{email},
+	#{password},
+	#{userName},
+	#{showName},
+	#{sex},
+	#{age},
+	#{createTime},
+	#{isavalible},
+	#{picImg},
+	#{bannerUrl},
+	#{msgNum},
+	#{sysMsgNum},
+	#{lastSystemTime}
+	</sql>
+	<resultMap type="User" id="UserResult">
+	<result property="userId" column="USER_ID"/>
+	<result property="mobile" column="MOBILE"/>
+	<result property="email" column="EMAIL"/>
+	<result property="password" column="PASSWORD"/>
+	<result property="userName" column="USER_NAME"/>
+	<result property="showName" column="SHOW_NAME"/>
+	<result property="sex" column="SEX"/>
+	<result property="age" column="AGE"/>
+	<result property="createTime" column="CREATE_TIME"/>
+	<result property="isavalible" column="IS_AVALIBLE"/>
+	<result property="picImg" column="PIC_IMG"/>
+	<result property="bannerUrl" column="BANNER_URL"/>
+	<result property="msgNum" column="MSG_NUM"/>
+	<result property="sysMsgNum" column="SYS_MSG_NUM"/>
+	<result property="lastSystemTime" column="LAST_SYSTEM_TIME"/>
+	</resultMap>
+	
+	<!-- 注册创建用户 -->
+	<insert id="createUser" parameterType="User" useGeneratedKeys="true" keyColumn="USER_ID" keyProperty="userId">
+	INSERT INTO EDU_USER(<include refid="edu_user_column"/>)
+	VALUE(<include refid="edu_user_property"/>)
+	</insert>
+	
+	<!-- 通过用户ID，查询用户记录 -->
+	<select id="queryUserById" parameterType="int" resultMap="UserResult">
+	SELECT <include refid="edu_user_column"/> FROM EDU_USER WHERE EDU_USER.USER_ID=#{value}
+	</select>
+	
+	<!-- 查询手机是否存在 -->
+	<select id="checkMobile" parameterType="java.lang.String" resultType="int">
+	SELECT COUNT(1) FROM EDU_USER WHERE EDU_USER.MOBILE=#{value}
+	</select>
+	
+	<!-- 查询邮箱号是否存在 -->
+	<select id="checkEmail" parameterType="java.lang.String" resultType="int">
+	SELECT COUNT(1) FROM EDU_USER WHERE EDU_USER.EMAIL=#{value}
+	</select>
+	
+	<!-- 用户登录 (手机或邮箱均可登录)-->
+	<select id="getLoginUser" parameterType="java.util.Map" resultMap="UserResult">
+	SELECT <include refid="edu_user_column"/> FROM EDU_USER 
+	WHERE EDU_USER.PASSWORD=#{password} AND (EDU_USER.MOBILE=#{account} OR EDU_USER.EMAIL=#{account})
+	</select>
+	
+	<!-- 修改学员密码 -->
+	<update id="updateUserPwd" parameterType="User">
+	UPDATE EDU_USER SET 
+	EDU_USER.PASSWORD=#{password}
+	WHERE EDU_USER.USER_ID=#{userId}
+	</update>
+	
+	<!-- 分页查询用户列表，开始 -->
+	<select id="queryUserListPage" parameterType="java.util.Map" resultMap="UserResult">
+	SELECT <include refid="edu_user_column"/> FROM EDU_USER 
+	<where>
+		<if test="e.isavalible>0">
+		EDU_USER.IS_AVALIBLE=#{e.isavalible}
+		</if>
+		<if test="e.keyWord!=null and e.keyWord!=''">
+		AND (EDU_USER.MOBILE LIKE CONCAT('%',#{e.keyWord},'%') OR EDU_USER.EMAIL LIKE CONCAT('%',#{e.keyWord},'%') OR EDU_USER.USER_NAME LIKE CONCAT('%',#{e.keyWord},'%') OR EDU_USER.SHOW_NAME LIKE CONCAT('%',#{e.keyWord},'%'))
+		</if>
+		<if test="e.beginCreateTime!=null and e.beginCreateTime!=''">
+			AND EDU_USER.CREATE_TIME >= #{e.beginCreateTime}
+		</if>
+		<if test="e.endCreateTime!=null and e.endCreateTime!=''">
+			AND <![CDATA[EDU_USER.CREATE_TIME <= #{e.endCreateTime}]]>
+		</if>
+	</where>
+	<include refid="publicMapper.pageEnd"/>
+	</select>
+	<select id="queryUserListPageCount" parameterType="java.util.Map" resultType="int">
+	SELECT COUNT(1) FROM EDU_USER 
+	<where>
+		<if test="e.isavalible>0">
+		EDU_USER.IS_AVALIBLE=#{e.isavalible}
+		</if>
+		<if test="e.keyWord!=null and e.keyWord!=''">
+		AND (EDU_USER.MOBILE LIKE CONCAT('%',#{e.keyWord},'%') OR EDU_USER.EMAIL LIKE CONCAT('%',#{e.keyWord},'%') OR EDU_USER.USER_NAME LIKE CONCAT('%',#{e.keyWord},'%') OR EDU_USER.SHOW_NAME LIKE CONCAT('%',#{e.keyWord},'%'))
+		</if>
+		<if test="e.beginCreateTime!=null and e.beginCreateTime!=''">
+			AND EDU_USER.CREATE_TIME >= #{e.beginCreateTime}
+		</if>
+		<if test="e.endCreateTime!=null and e.endCreateTime!=''">
+			AND <![CDATA[EDU_USER.CREATE_TIME <= #{e.endCreateTime}]]>
+		</if>
+	</where>
+	</select>
+	<!-- 分页查询用户列表，结束-->
+	
+	<!-- 冻结或解冻用户 -->
+	<update id="updateUserStates" parameterType="User">
+	UPDATE EDU_USER SET EDU_USER.IS_AVALIBLE=#{isavalible} WHERE EDU_USER.USER_ID=#{userId}
+	</update>
+	
+	<!-- 修改用户信息 -->
+	<update id="updateUser" parameterType="User">
+	UPDATE EDU_USER SET 
+	EDU_USER.USER_NAME=#{userName},
+	EDU_USER.SHOW_NAME=#{showName},
+	EDU_USER.SEX=#{sex},
+	EDU_USER.AGE=#{age}
+	WHERE EDU_USER.USER_ID=#{userId}
+	</update>
+	
+	<!-- 修改用户头像 -->
+	<update id="updateImg" parameterType="User">
+	UPDATE EDU_USER SET 
+	EDU_USER.PIC_IMG=#{picImg}
+	WHERE EDU_USER.USER_ID=#{userId}
+	</update>
+	
+	<!-- 修改个中心个性化图片URL -->
+	<update id="updateUserBannerUrl" parameterType="User">
+	UPDATE EDU_USER SET BANNER_URL=#{bannerUrl} WHERE USER_ID=#{userId}
+	</update>
+	
+	<!-- 查询所有学员记录数 -->
+	<select id="queryAllUserCount" resultType="int">
+	SELECT COUNT(1) FROM EDU_USER
+	</select>
+	
+	<!-- 通过手机号或邮箱号查询用户信息 -->
+	<select id="queryUserByEmailOrMobile" parameterType="java.lang.String" resultMap="UserResult">
+	SELECT <include refid="edu_user_column"/> FROM EDU_USER WHERE EMAIL=#{value} OR MOBILE=#{value} LIMIT 1
+	</select>
+	
+	<!-- 根据多个用户id获取用户信息 -->
+	<select id="queryCustomerInCusIds" parameterType="java.util.HashMap" resultMap="UserResult">
+		select
+		<include refid="edu_user_column"/>
+		from EDU_USER 
+		where EDU_USER.USER_ID in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">  
+        	#{item}  
+   		</foreach>  
+	</select>
+	
+	<!-- 更新提醒的消息数量 +1-->
+	<update id="updateUnReadMsgNumAddOne" parameterType="java.util.HashMap">
+		update EDU_USER set 
+		<if test="falg=='msgNum'">
+		msg_num=msg_num+1
+		</if>
+		<if test="falg=='sysMsgNum'">
+		sys_msg_num=sys_msg_num+1
+		</if>
+		where
+		USER_ID=#{cusId}
+	</update>
+	
+	<!-- 不区分消息类型 -->
+	<update id="updateUnReadMsgNumReset" parameterType="java.util.HashMap">
+		update EDU_USER set 
+		MSG_NUM=0,
+		SYS_MSG_NUM=0
+		where
+		USER_ID=#{cusId}
+	</update>
+	
+	<!-- 更新最后提醒消息的时间 -->
+	<update id="updateCusForLST" parameterType="java.util.HashMap">
+		update EDU_USER set LAST_SYSTEM_TIME=#{date} where
+		USER_ID=#{cusId}
+	</update>
+
+	<select id="getUserListPage" resultMap="UserResult" parameterType="java.util.HashMap">
+		select
+		<include refid="edu_user_column" />
+		from edu_user
+		<where>
+			<if test="e.userId !=null and e.userId > 0 ">
+				AND EDU_USER.USER_ID = #{e.userId}
+			</if>
+			<if test="e.email !=null and e.email !='' ">
+				AND EDU_USER.EMAIL like CONCAT('%',#{e.email},'%')
+			</if>
+			<if test="e.mobile !=null and e.mobile !='' ">
+				AND EDU_USER.MOBILE like CONCAT('%',#{e.mobile},'%')
+			</if>
+			<if test="e.userName !=null and e.userName !='' ">
+				AND EDU_USER.USER_NAME like CONCAT('%',#{e.userName},'%')
+			</if>
+			<if test="e.showName !=null and e.showName !='' ">
+				AND EDU_USER.SHOW_NAME like CONCAT('%',#{e.showName},'%')
+			</if>
+			<if test="e.sex !=null and e.sex > 0 ">
+				AND EDU_USER.SEX=#{e.sex}
+			</if>
+		</where>
+		order by EDU_USER.USER_ID desc
+		<include refid="publicMapper.pageEnd" />
+	</select>
+	<select id="getUserListPageCount" resultType="int" parameterType="java.util.HashMap">
+		select
+		count(1)
+		from edu_user
+		<where>
+			<if test="e.userId !=null and e.userId > 0 ">
+				AND EDU_USER.USER_ID = #{e.userId}
+			</if>
+			<if test="e.email !=null and e.email !='' ">
+				AND EDU_USER.EMAIL like CONCAT('%',#{e.email},'%')
+			</if>
+			<if test="e.mobile !=null and e.mobile !='' ">
+				AND EDU_USER.MOBILE like CONCAT('%',#{e.mobile},'%')
+			</if>
+			<if test="e.userName !=null and e.userName !='' ">
+				AND EDU_USER.USER_NAME like CONCAT('%',#{e.userName},'%')
+			</if>
+			<if test="e.showName !=null and e.showName !='' ">
+				AND EDU_USER.SHOW_NAME like CONCAT('%',#{e.showName},'%')
+			</if>
+			<if test="e.sex !=null and e.sex > 0 ">
+				AND EDU_USER.SEX=#{e.sex}
+			</if>
+		</where>
+	</select>
+</mapper>

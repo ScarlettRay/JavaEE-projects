@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="QuestionsTagMapper" >
+
+    <resultMap id="QuestionsTagResult" type="QuestionsTag">
+    <result property="questionsTagId" column="QUESTIONS_TAG_ID" />
+    <result property="questionsTagName" column="QUESTIONS_TAG_NAME" />
+    <result property="status" column="STATUS" />
+    <result property="createTime" column="CREATE_TIME" />
+    <result property="parentId" column="PARENT_ID" />
+    </resultMap>
+
+    <sql id="edu_questions_tag_columns">
+    EDU_QUESTIONS_TAG.QUESTIONS_TAG_ID,
+    EDU_QUESTIONS_TAG.QUESTIONS_TAG_NAME,
+    EDU_QUESTIONS_TAG.STATUS,
+    EDU_QUESTIONS_TAG.CREATE_TIME,
+    EDU_QUESTIONS_TAG.PARENT_ID
+    </sql>
+
+    <sql id="edu_questions_tag_properties">
+    #{questionsTagId},
+    #{questionsTagName},
+    #{status},
+    #{createTime},
+    #{parentId}
+    </sql>
+
+	<!-- 添加专业 -->
+    <insert id="createQuestionsTag" parameterType="QuestionsTag" useGeneratedKeys="true" keyColumn="QUESTIONS_TAG_ID" keyProperty="questionsTagId">
+    INSERT INTO EDU_QUESTIONS_TAG (<include refid="edu_questions_tag_columns"/>) 
+    VALUES (<include refid="edu_questions_tag_properties"/>)
+    </insert>
+	
+	<!-- 查询所有专业列表 -->
+	<select id="getQuestionsTagList" parameterType="QuestionsTag" resultMap="QuestionsTagResult">
+	SELECT <include refid="edu_questions_tag_columns"/> FROM EDU_QUESTIONS_TAG 
+	WHERE EDU_QUESTIONS_TAG.STATUS=0
+	<if test="parentId>0">
+	AND EDU_QUESTIONS_TAG.PARENT_ID = #{parentId}
+	</if>
+	<if test="questionsTagId>0">
+	AND EDU_QUESTIONS_TAG.QUESTIONS_TAG_ID=#{questionsTagId}
+	</if>
+    ORDER BY EDU_QUESTIONS_TAG.PARENT_ID,EDU_QUESTIONS_TAG.QUESTIONS_TAG_ID
+	</select>
+	<!-- 修改专业父ID -->
+	<update id="updateQuestionsTagParentId" parameterType="java.util.Map">
+	UPDATE EDU_QUESTIONS_TAG SET 
+	EDU_QUESTIONS_TAG.PARENT_ID=#{parentId}
+	WHERE EDU_QUESTIONS_TAG.QUESTIONS_TAG_ID=#{questionsTagId}
+	</update>
+	<!-- 修改专业名 -->
+	<update id="updateQuestionsTag" parameterType="QuestionsTag">
+	UPDATE EDU_QUESTIONS_TAG SET 
+	EDU_QUESTIONS_TAG.QUESTIONS_TAG_NAME=#{questionsTagName}
+	WHERE EDU_QUESTIONS_TAG.QUESTIONS_TAG_ID=#{questionsTagId}
+	</update>
+	<!-- 设置专业的状态为删除状态 -->
+	<update id="deleteQuestionsTag" parameterType="int">
+	UPDATE EDU_QUESTIONS_TAG SET STATUS=1 WHERE EDU_QUESTIONS_TAG.QUESTIONS_TAG_ID=#{value}
+	</update>
+</mapper>

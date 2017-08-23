@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WebsiteProfileMapper">
+
+	<resultMap id="WebsiteProfileResult" type="WebsiteProfile">
+		<result property="id" column="ID" />
+		<result property="type" column="TYPE" />
+		<result property="desciption" column="DESCIPTION" />
+		<result property="explain" column="EXPLAIN" />
+	</resultMap>
+
+	<sql id="edu_website_profile_columns">
+	EDU_WEBSITE_PROFILE.ID,
+	EDU_WEBSITE_PROFILE.TYPE,
+	EDU_WEBSITE_PROFILE.DESCIPTION,
+	EDU_WEBSITE_PROFILE.EXPLAIN
+	</sql>
+
+	<sql id="edu_website_profile_properties">
+	#{id},
+	#{type},
+	#{desciption},
+	#{explain}
+	</sql>
+	<!-- 查询所有配置 -->
+	<select id="getWebsiteProfileList" resultMap="WebsiteProfileResult">
+		SELECT <include refid="edu_website_profile_columns"/> FROM EDU_WEBSITE_PROFILE
+	</select>
+	<!-- 修改配置 -->
+	<update id="updateWebsiteProfile" parameterType="WebsiteProfile">
+		UPDATE EDU_WEBSITE_PROFILE SET
+		DESCIPTION = #{desciption}
+		WHERE TYPE = #{type}
+	</update>
+	<!-- 根据类型获得 配置-->
+	<select id="getWebsiteProfileByType" resultMap="WebsiteProfileResult" parameterType="java.lang.String">
+		SELECT <include refid="edu_website_profile_columns" />
+		FROM EDU_WEBSITE_PROFILE WHERE EDU_WEBSITE_PROFILE.TYPE = #{value}
+	</select>
+	<insert id="addWebsiteProfileByType" parameterType="WebsiteProfile" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		INSERT INTO EDU_WEBSITE_PROFILE(
+		<include refid="edu_website_profile_columns" />
+		)
+		VALUE(
+		<include refid="edu_website_profile_properties" />
+		)
+	</insert>
+</mapper>

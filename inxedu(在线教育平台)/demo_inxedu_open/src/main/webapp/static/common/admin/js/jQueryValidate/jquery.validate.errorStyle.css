@@ -1,0 +1,7 @@
+label.error {
+	display: inline;
+	padding-left: 16px;
+	padding-bottom: 2px;
+	font-weight: bold;
+	color: #EA5200;
+}

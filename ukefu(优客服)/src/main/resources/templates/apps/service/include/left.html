@@ -1,0 +1,54 @@
+<ul class="layui-nav layui-nav-tree" lay-filter="setting">
+	<li class="layui-nav-item layui-nav-itemed">
+		<a class="layui-nav-title" href="javascript:;">会话信息</a>
+		<dl class="layui-nav-child">
+			<dd <#if subtype?? && subtype == 'history'>class="layui-this"</#if>>
+				
+				<a href="/service/history/index.html">历史会话</a>
+			</dd>
+			<dd <#if subtype?? && subtype == 'current'>class="layui-this"</#if>>
+				<a href="/service/current/index.html">当前会话</a>
+			</dd>
+			<dd <#if subtype?? && subtype == 'quene'>class="layui-this"</#if>>
+				<a href="/service/quene/index.html">排队队列</a>
+			</dd>
+			<dd <#if subtype?? && subtype == 'leavemsg'>class="layui-this"</#if>>
+				<a href="/service/leavemsg/index.html">访客留言</a>
+			</dd>
+		</dl>
+	</li>
+	
+	<li class="layui-nav-item layui-nav-itemed">
+		<a class="layui-nav-title" href="javascript:;">服务小结</a>
+		<dl class="layui-nav-child">
+			<dd <#if subtype?? && subtype == 'agentsummary'>class="layui-this"</#if>>
+				<a href="/apps/agent/summary/index.html">多媒体客服</a>
+			</dd>
+			<dd <#if subtype?? && subtype == 'processed'>class="layui-this"</#if>>
+				<a href="/apps/agent/processed/index.html">已处理多媒体客服</a>
+			</dd>
+			<#if models?? && models["callcenter"]?? && models["callcenter"] == true>
+			<dd <#if subtype?? && subtype == 'summary'>class="layui-this"</#if>>
+				<a href="/apps/callcenter/summary/index.html">呼叫中心</a>
+			</dd>
+			<dd <#if subtype?? && subtype == 'callcenterprocessed'>class="layui-this"</#if>>
+				<a href="/apps/callcenter/processed/index.html">已处理呼叫中心</a>
+			</dd>
+			</#if>
+		</dl>
+	</li>
+	
+	<li class="layui-nav-item layui-nav-itemed">
+		<a class="layui-nav-title" href="javascript:;">坐席信息</a>
+		<dl class="layui-nav-child">
+			<dd <#if subtype?? && subtype == 'onlineagent'>class="layui-this"</#if>>
+				
+				<a href="/service/agent/index.html">在线坐席</a>
+			</dd>
+			<dd <#if subtype?? && subtype == 'userlist'>class="layui-this"</#if>>
+				<a href="/service/user/index.html">全部坐席</a>
+			</dd>
+		</dl>
+	</li>
+	
+</ul>

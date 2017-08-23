@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CourseStudyhistoryMapper">
+
+	<resultMap id="CourseStudyhistoryResult" type="CourseStudyhistory">
+		<result property="id" column="ID" />
+		<result property="userId" column="USER_ID" />
+		<result property="courseId" column="COURSE_ID" />
+		<result property="kpointId" column="KPOINT_iD" />
+		<result property="playercount" column="PLAYERCOUNT" />
+		<result property="courseName" column="COURSE_NAME" />
+		<result property="kpointName" column="KPOINT_NAME" />
+		<result property="databack" column="DATABACK" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		
+		<result property="userShowName" column="userShowName" />
+		<result property="userEmail" column="userEmail" />
+		<result property="userImg" column="userImg" />
+	</resultMap>
+
+
+	<resultMap type="CourseStudyhistory" id="AllCourseStudyhistoryResult"
+		extends="CourseStudyhistoryResult">
+		<result property="teacherName" column="name" />
+		<result property="logo" column="logo" />
+	</resultMap>
+	<sql id="edu_course_studyhistory_columns">
+		edu_course_studyhistory.ID,
+		edu_course_studyhistory.USER_ID,
+		edu_course_studyhistory.COURSE_ID,
+		edu_course_studyhistory.KPOINT_iD,
+		edu_course_studyhistory.PLAYERCOUNT,
+		edu_course_studyhistory.COURSE_NAME,
+		edu_course_studyhistory.KPOINT_NAME,
+		edu_course_studyhistory.DATABACK,
+		edu_course_studyhistory.UPDATE_TIME
+	</sql>
+
+	<sql id="edu_course_studyhistory_properties">
+		#{id},
+		#{userId},
+		#{courseId},
+		#{kpointId},
+		#{playercount},
+		#{courseName},
+		#{kpointName},
+		#{databack},
+		#{updateTime}
+	</sql>
+
+	<insert id="createCourseStudyhistory" parameterType="CourseStudyhistory"
+		keyColumn="ID" keyProperty="id" useGeneratedKeys="true">
+		insert INTO edu_course_studyhistory (
+		<include refid="edu_course_studyhistory_columns" />
+		) VALUES (
+		<include refid="edu_course_studyhistory_properties" />
+		)
+	</insert>
+
+	<delete id="deleteCourseStudyhistoryById" parameterType="Long">
+		delete
+		from edu_course_studyhistory
+		where
+		ID = #{value}
+	</delete>
+
+	<update id="updateCourseStudyhistory" parameterType="CourseStudyhistory">
+		update
+		edu_course_studyhistory SET
+		USER_ID = #{userId},
+		COURSE_ID =
+		#{courseId},
+		KPOINT_iD = #{kpointId},
+		PLAYERCOUNT = #{playercount},
+		COURSE_NAME =#{courseName},
+		KPOINT_NAME =#{kpointName},
+		DATABACK =
+		#{databack},
+		UPDATE_TIME = #{updateTime}
+		where
+		ID = #{id}
+	</update>
+
+	<select id="getCourseStudyhistoryList" resultMap="CourseStudyhistoryResult"
+		parameterType="CourseStudyhistory">
+		select
+		<include refid="edu_course_studyhistory_columns" />,
+		edu_user.PIC_IMG AS picImg,
+		ifnull(edu_User.SHOW_NAME,edu_user.EMAIL) AS showName
+		from edu_course_studyhistory
+		left join edu_course_kpoint on edu_course_kpoint.KPOINT_ID = edu_course_studyhistory.KPOINT_ID
+		left join edu_user on edu_user.USER_ID = edu_course_studyhistory.USER_ID
+		<where>
+			edu_course_kpoint.KPOINT_ID is not null
+			and edu_course_kpoint.KPOINT_TYPE=1
+			<if test="userId!=null and userId>0">
+				and edu_course_studyhistory.USER_ID = #{userId}
+			</if>
+			<if test="courseId!=null and courseId>0">
+				and edu_course_studyhistory.COURSE_ID = #{courseId}
+			</if>
+			<if test="kpointId!=null and kpointId>0">
+				and edu_course_studyhistory.KPOINT_iD = #{kpointId}
+			</if>
+		</where>
+		<if test="queryLimit>0">
+			ORDER by edu_course_studyhistory.UPDATE_TIME DESC
+			limit #{queryLimit}
+		</if>
+	</select>
+
+	<!-- 查看 课程下的学习记录 -->
+	<select id="getCourseStudyhistoryListByCouId" resultMap="CourseStudyhistoryResult" parameterType="long">
+		select
+		distinct(edu_course_studyhistory.USER_ID),
+		edu_user.SHOW_NAME as userShowName,edu_user.EMAIL as userEmail,edu_user.PIC_IMG as userImg
+		from edu_course_studyhistory
+        left join edu_user on edu_user.USER_ID = edu_course_studyhistory.USER_ID
+		where
+	    edu_course_studyhistory.COURSE_ID = #{value}
+	    order by edu_course_studyhistory.UPDATE_TIME desc
+        limit 8
+	</select>
+	
+	<!-- 查看 课程下的学习记录 总人数-->
+	<select id="getCourseStudyhistoryCountByCouId" resultType="int" parameterType="long">
+		select
+		IFNULL(count(distinct(edu_course_studyhistory.USER_ID)),0)
+		from edu_course_studyhistory
+		where
+	    edu_course_studyhistory.COURSE_ID = #{value}
+	</select>
+	
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd"
+       default-lazy-init="true">
+       
+	<context:component-scan base-package="com.inxedu.os"> 
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+	</context:component-scan>
+	
+	<!-- 配置文件加载 -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:/project.properties</value>
+			</list>
+		</property>
+	</bean>
+	 <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+	      <property name="url" value="jdbc:mysql://${jdbc.host}:3306/${jdbc.database}?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull"/>
+	      <property name="username" value="${jdbc.username}"/>
+	      <property name="password" value="${jdbc.password}"/>
+		 <!-- 配置初始化大小、最小、最大 -->
+		   <property name="initialSize" value="3" />
+		   <property name="minIdle" value="3" />
+		   <property name="maxActive" value="10" />
+		   <!-- 配置获取连接等待超时的时间 -->
+		   <property name="maxWait" value="60000" />
+		   <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		   <property name="timeBetweenEvictionRunsMillis" value="60000" />
+		   <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		   <property name="minEvictableIdleTimeMillis" value="300000" />
+		   <property name="validationQuery" value="SELECT 'x'" />
+		   <property name="testWhileIdle" value="true" />
+		   <property name="testOnBorrow" value="false" />
+		   <property name="testOnReturn" value="false" />
+		   <!-- 配置监控统计拦截的filters -->
+		   <property name="filters" value="stat" />
+	   </bean>
+       
+	
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<bean id="transactionInterceptor"
+		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transactionAttributes">
+			<props>
+				<!-- 读操作 -->
+				<prop key="query*">PROPAGATION_SUPPORTS,-Exception</prop>
+				<prop key="find*">PROPAGATION_SUPPORTS,-Exception</prop>
+				<prop key="get*">PROPAGATION_SUPPORTS,-Exception</prop>
+				<prop key="load*">PROPAGATION_SUPPORTS,-Exception</prop>
+				<prop key="count*">PROPAGATION_SUPPORTS,-Exception</prop>
+				<prop key="list*">PROPAGATION_SUPPORTS,-Exception</prop>
+				<prop key="check*">PROPAGATION_SUPPORTS,-Exception</prop>
+				<prop key="qry*">PROPAGATION_SUPPORTS,-Exception</prop>
+				<prop key="select*">PROPAGATION_SUPPORTS,-Exception</prop>
+				<!-- 写操作 -->
+				<prop key="save*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="del*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="add*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="upd*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="insert*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="creat*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="edit*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="remove*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="gain*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="onlineDb*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="trxqry*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="credit*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="debit*">PROPAGATION_REQUIRED,-Exception</prop>
+				
+				<prop key="*">PROPAGATION_SUPPORTS,-Exception</prop>
+
+			</props>
+		</property>
+	</bean>
+
+	<!-- 根据Name匹配拦截器 -->
+	<bean
+		class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames">
+			<list>
+				<value>*Service</value>
+			</list>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<!-- 事务管理的Interceptor -->
+				<value>transactionInterceptor</value>
+			</list>
+		</property>
+	</bean>
+	
+   	<!-- 本项目数据源代码-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- 显式指定Mapper文件位置 -->
+    	 <property name="configLocation"  value="classpath:/SqlMapConfig.xml"/>
+    	 <!-- 通配符指定Mapper.xml -->
+		<property name="mapperLocations" value="classpath:/mybatis/**/*Mapper.xml" />
+		<!-- 自动扫描entity目录, 省掉Configuration.xml里的手工配置 -->
+		 <property name="typeAliasesPackage" value="com.inxedu.os.common.entity,com.inxedu.os.edu.entity,com.inxedu.os.app.entity" />
+	</bean>
+	<bean id="sqlSessionMain" class="org.mybatis.spring.SqlSessionTemplate">  
+    	<constructor-arg index="0" ref="sqlSessionFactory"/>  
+	</bean>
+	
+	<!-- 邮件发送线程类-->
+	<bean name="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="defaultEncoding" value="UTF-8"></property>
+		<property name="javaMailProperties">
+			<map>
+				<entry key="mail.smtp.auth" value="true" />
+			</map>
+		</property>
+	</bean>
+	
+	
+	<!-- 其他组件配置文件加载 -->
+	 <import resource="classpath:/spring-quartz.xml"/>
+</beans>

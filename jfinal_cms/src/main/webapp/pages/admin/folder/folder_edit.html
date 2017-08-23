@@ -1,0 +1,126 @@
+<% 
+DIRECTIVE SAFE_OUTPUT_OPEN;
+var headContent = {
+	include("/pages/template/head.html"){}
+%>
+<script type="text/javascript">
+	var oper = {
+		save:function(id){
+			if(!validForm()) {
+				return false;
+			}
+			id = id || '0';
+			var url = 'admin/folder/save/'+id;
+			form1.action = url;
+			form1.submit();
+			return true;
+		}	
+	};
+</script>
+
+<%
+};
+var bodyContent = {
+%>
+<form name="form1" action="" method="post" class="form-horizontal"
+		role="form" >
+	<input type="hidden" name="model.id" value="${model.id}" />
+	<table class="table">
+		<% // 列表头部 %>
+		<tr>
+			<td>父栏目</td>
+			<td>
+				<select name="model.parent_id" class="form-control" valid="vselect" validname="目录">
+				<option value="0">--根栏目--</option>
+				${selectParentFolder }
+				</select>
+			</td>
+			<td>名称</td>
+			<td>
+				<input class="form-control" type="text" name="model.name" value="${model.name}" 
+						valid="vtext" validname="名称" />
+			</td>
+		</tr>
+		<tr>
+			<td>栏目类型</td>
+			<td>
+				<select name="model.material_type" class="form-control" >
+				${flyfox.dictSelect('materialType' , model.material_type!'')  }
+				</select>
+			</td>
+			<td>url_key</td>
+			<td>
+				<input class="form-control" type="text" name="model.key" value="${model.key}" />
+			</td>
+		</tr>
+		<tr>
+			<td>模板路径</td>
+			<td colspan="3">
+				<input class="form-control" type="text" name="model.path" value="${model.path}" />
+			</td>
+		</tr>
+		<tr>
+			<td>排序</td>
+			<td>
+					<input class="form-control" type="text" name="model.sort" value="${model.sort!'10'}" 
+					valid="vnum" validname="排序"  />
+			</td>
+			<td>状态</td>
+			<td>
+				<label class="radio-inline">
+				  <input type="radio" name="model.status" id="" value="2"  ${model.status==2?"checked":"" } > 隐藏
+				</label>
+				<label class="radio-inline">
+				  <input type="radio" name="model.status" id="" value="1"  ${model.status!=2?"checked":"" } > 显示
+				</label>
+			</td>
+		</tr>
+		<tr>
+			<td>跳转类型</td>
+			<td>
+				<select name="model.type" class="form-control" >
+				${flyfox.dictSelect('folderType' , model.type!'')  }
+				</select>
+			</td>
+			<td>跳转地址</td>
+			<td>
+				<input class="form-control" type="text" name="model.jump_url" value="${model.jump_url}"  />
+			</td>
+		</tr>
+		<tr>
+			<td>说明</td>
+			<td colspan="3">
+				<textarea class="form-control" rows="2" cols="30" name="model.content">${model.content}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td>seo_title</td>
+			<td>
+				<input class="form-control" type="text" name="model.seo_title" value="${model.seo_title}"  />
+			</td>
+			<td>seo_keywords</td>
+			<td>
+				<input class="form-control" type="text" name="model.seo_keywords" value="${model.seo_keywords}"  />
+			</td>
+		</tr>
+		<tr>
+			<td>seo_description</td>
+			<td colspan="3">
+				<textarea class="form-control" rows="2" cols="30" name="model.seo_description">${model.seo_description}</textarea>
+			</td>
+		</tr>
+	</table>
+	
+	<div style="height: 50px;clear: both;">&nbsp;</div>
+	<nav class="navbar navbar-default navbar-fixed-bottom">
+	  <div class="container" style="padding: 5px 0px 5px 0px;text-align: center;">
+		<button class="btn btn-primary" onclick="oper.save(${model.id!'0'});return false;">保 存</button>
+		<button class="btn btn-default" onclick="closeIframe();return false;">关 闭</button>
+	  </div>
+	</nav>
+</form>
+<%}; %>
+
+<% layout("/pages/template/_layout.html",{head:headContent,body:bodyContent}){ %>
+DIRECTIVE SAFE_OUTPUT_CLOSE;
+<%} %>

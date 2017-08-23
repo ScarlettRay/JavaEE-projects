@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<settings>
+		<setting name="lazyLoadingEnabled" value="false" />
+		<setting name="cacheEnabled" value="false" />
+		<setting name="logPrefix" value="dao." />
+	</settings>
+
+	
+
+	<typeAliases>
+		<!-- 所有用到的实体类无需填写 -->
+	</typeAliases>
+
+	<!-- Mapper.xml无需挨个引入，全部命名规范：以Mapper.xml结尾会自动引入 如：publicMapper.xm -->
+
+	<plugins>
+		<plugin interceptor="com.inxedu.os.common.intercepter.PageInterceptor">
+
+		</plugin>
+
+	</plugins>
+</configuration>

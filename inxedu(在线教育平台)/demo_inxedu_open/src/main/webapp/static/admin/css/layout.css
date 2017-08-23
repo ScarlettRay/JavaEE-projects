@@ -1,0 +1,95 @@
+@import 'core.css';
+
+@import 'skin_clean.css';
+
+@import 'plugins.css';
+
+@import 'css3.css';
+
+html, body {
+	width: 100%;
+}
+
+body {
+	background: #FFF;
+	font: 12px/150% 'Arial', 'Helvetica Neue', 'Helvetica', 'sans-serif';
+	word-break: break-all;
+	word-wrap: break-word;
+}
+
+ul, ol, li {
+	list-style: none
+}
+
+a {
+	text-decoration: none;
+	color: #555;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #dd491f;
+}
+
+a:focus {
+	outline: none;
+	-moz-outline: none;
+}
+
+a:active {
+	outline: none;
+	blr: expression(this.onFocus = this.blur ())
+}
+
+a, img {
+	border: 0 none;
+}
+
+input, select, button {
+	vertical-align: middle;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	empty-cells: show;
+}
+
+.clear {
+	clear: both;
+	font-size: 0;
+	content: " ";
+	line-height: 1px;
+	height: 1px;
+	_height: 1%;
+	margin-top: -1px;
+}
+
+.mt20 {
+	margin-top: 20px;
+}
+
+.w50pre {
+	width: 50%;
+}
+
+.fl {
+	float: left;
+	_display: inline;
+}
+
+.commonTab01 table.ke-container td {
+	border: none;
+	padding: 0;
+}
+
+/*.ddBar li {
+	padding: 10px 0 10px 4em;
+}*/
+
+.capHead {
+	background: none repeat scroll 0 0 #fff;
+	border: 1px solid #ddd;
+	margin: 10px 0;
+	padding: 20px;
+}

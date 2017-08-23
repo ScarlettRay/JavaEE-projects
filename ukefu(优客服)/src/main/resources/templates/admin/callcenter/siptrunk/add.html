@@ -1,0 +1,73 @@
+<div class="uk-layui-form">
+    <form class="layui-form uk-form" action="/admin/callcenter/siptrunk/save.html" data-toggle="ajax-form" data-inner="#callCenterContent">
+    	<input type="hidden" name="hostid" value="${pbxHost.id!''}">
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" required lay-verify="required" placeholder="请输入SIP网关名称" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+            	<font color="red">*</font> 
+            	SIP中继名称，请使用英文或拼音代码
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">SIP网关地址：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="sipserver" required lay-verify="required" placeholder="请输入SIP网关地址" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+            	<font color="red">*</font> 
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">端口：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="port" required lay-verify="required" value="5060" placeholder="SIP网关端口（默认5060）" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+            	<font color="red">*</font> 
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">心跳检测：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="heartbeat" lay-verify="number" value="5" placeholder="" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+            	<font color="red">*</font>
+            	心跳检测频率，默认5秒 
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">协议：</label>
+            <div class="layui-input-inline">
+                <select name="protocol" lay-verify="required">
+			        <option value="UDP">UDP</option>
+			        <option value="TCP">TCP</option>
+			      </select>
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+            	<font color="red">*</font> 
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">注册：</label>
+            <div class="layui-input-inline">
+                <input type="checkbox" name="register" lay-skin="switch" lay-text="是|否">
+            </div>
+        </div>
+        <div class="layui-form-button">
+            <div class="layui-button-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+layui.use('form', function(){
+  var form = layui.form();
+  form.render();
+});
+</script>

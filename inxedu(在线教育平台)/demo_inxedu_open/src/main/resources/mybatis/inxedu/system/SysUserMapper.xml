@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SysUserMapper" >
+	<sql id="sys_user_column">
+	SYS_USER.USER_ID,
+	SYS_USER.LOGIN_NAME,
+	SYS_USER.LOGIN_PWD,
+	SYS_USER.USER_NAME,
+	SYS_USER.STATUS,
+	SYS_USER.LAST_LOGIN_TIME,
+	SYS_USER.LAST_LOGIN_IP,
+	SYS_USER.CREATE_TIME,
+	SYS_USER.EMAIL,
+	SYS_USER.TEL,
+	SYS_USER.ROLE_ID
+	</sql>
+	<sql id="sys_user_property">
+	#{userId},
+	#{loginName},
+	#{loginPwd},
+	#{userName},
+	#{status},
+	#{lastLoginTime},
+	#{lastLoginIp},
+	#{createTime},
+	#{email},
+	#{tel},
+	#{roleId}
+	</sql>
+	
+    <resultMap type="SysUser" id="SysUserResult">
+   	<result property="userId" column="USER_ID"/>
+   	<result property="loginName" column="LOGIN_NAME"/>
+   	<result property="loginPwd" column="LOGIN_PWD"/>
+   	<result property="userName" column="USER_NAME"/>
+   	<result property="status" column="STATUS"/>
+   	<result property="lastLoginTime" column="LAST_LOGIN_TIME"/>
+   	<result property="lastLoginIp" column="LAST_LOGIN_IP"/>
+   	<result property="createTime" column="CREATE_TIME"/>
+   	<result property="email" column="EMAIL"/>
+   	<result property="tel" column="TEL"/>
+   	<result property="roleId" column="ROLE_ID"/>
+    </resultMap>
+    
+    <!-- 添加用户 -->
+    <insert id="createSysUser" parameterType="SysUser" useGeneratedKeys="true" keyColumn="USER_ID" keyProperty="userId">
+    	INSERT INTO SYS_USER(<include refid="sys_user_column"/>)
+    	VALUE(<include refid="sys_user_property"/>)
+    </insert>
+    
+    <!-- 修改用户 -->
+    <update id="updateSysUser" parameterType="SysUser">
+    	UPDATE SYS_USER SET 
+		SYS_USER.USER_NAME=#{userName},
+		SYS_USER.EMAIL=#{email},
+		SYS_USER.TEL=#{tel},
+		SYS_USER.ROLE_ID=#{roleId}
+		WHERE
+    	SYS_USER.USER_ID=#{userId}
+    </update>
+    
+    <!-- 根据ID，查询用户信息 -->
+    <select id="querySysUserByUserId" parameterType="int" resultMap="SysUserResult">
+    	SELECT <include refid="sys_user_column"/> FROM SYS_USER WHERE SYS_USER.USER_ID=#{value}
+    </select>
+    
+    <!-- 分页查询用户列表 ，开始-->
+    <select id="querySysUserPage" parameterType="java.util.Map" resultMap="SysUserResult">
+    	SELECT <include refid="sys_user_column"/> FROM SYS_USER
+    	<where>
+    	SYS_USER.STATUS!=2 
+    	<if test="e.keyWord!=null and e.keyWord!=''">
+    	AND(SYS_USER.LOGIN_NAME LIKE CONCAT('%',#{e.keyWord},'%') OR SYS_USER.EMAIL LIKE CONCAT('%',#{e.keyWord},'%'))
+    	</if>
+    	</where>
+    	ORDER BY SYS_USER.USER_ID 
+    	<include refid="publicMapper.pageEnd"/>
+    </select>
+    <select id="querySysUserPageCount" parameterType="java.util.Map" resultType="int">
+    	SELECT COUNT(1) FROM SYS_USER
+    	<where>
+   		SYS_USER.STATUS!=2
+   		<if test="e.keyWord!=null and e.keyWord!=''">
+    	AND(SYS_USER.LOGIN_NAME LIKE CONCAT('%',#{e.keyWord},'%') OR SYS_USER.EMAIL LIKE CONCAT('%',#{e.keyWord},'%'))
+   		</if>
+    	</where>
+    </select>
+    <!-- 分页查询用户列表 ，结束-->
+    
+    <select id="validateLoginName" parameterType="java.lang.String" resultType="int">
+    	SELECT COUNT(1) FROM SYS_USER WHERE SYS_USER.LOGIN_NAME=#{valeu}
+    </select>
+    
+    <!-- 查询登录用户 -->
+    <select id="queryLoginUser" parameterType="SysUser" resultMap="SysUserResult">
+    	SELECT <include refid="sys_user_column"/> FROM SYS_USER
+    	WHERE SYS_USER.LOGIN_NAME=#{loginName} AND SYS_USER.LOGIN_PWD=#{loginPwd}
+    </select>
+    
+    <!-- 修改用户密码 -->
+    <update id="updateUserPwd" parameterType="SysUser">
+    	UPDATE SYS_USER SET SYS_USER.LOGIN_PWD=#{loginPwd} WHERE SYS_USER.USER_ID=#{userId}
+    </update>
+    
+    <!-- 禁用或启用后台用户 -->
+    <update id="updateDisableOrstartUser" parameterType="java.util.Map">
+    	update SYS_USER SET 
+    	<if test="type==1">
+    	SYS_USER.STATUS=0
+    	</if>
+    	<if test="type==2">
+    	SYS_USER.STATUS=1
+    	</if>
+		<if test="type==3">
+			SYS_USER.STATUS=2
+		</if>
+    	WHERE SYS_USER.USER_ID=#{userId}
+    </update>
+    
+    <!-- 更新用户最后登录的时间和IP -->
+    <update id="updateUserLoginLog" parameterType="java.util.Map">
+    	UPDATE SYS_USER SET SYS_USER.LAST_LOGIN_IP=#{ip} ,SYS_USER.LAST_LOGIN_TIME=#{time}
+    	WHERE SYS_USER.USER_ID=#{userId}
+    </update>
+</mapper>

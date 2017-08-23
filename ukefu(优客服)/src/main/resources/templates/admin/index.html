@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="viewport"
+	content="width=device-width, maximum-scale=1.0, initial-scale=1.0,initial-scale=1.0,user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>CM客服系统</title>
+<link rel="stylesheet" href="/css/flexboxgrid.min.css">
+<link rel="stylesheet" href="css/layui.css">
+<link rel="stylesheet" href="/res/css.html">
+<script src="/js/jquery-1.10.2.min.js"></script>
+<script src="/layui.js"></script>
+<script src="/js/ukefu.js"></script>
+<script src="/im/js/socket.io.js"></script>	
+<script src="/js/UCKeFu_IM.v1.js"></script>
+
+<script language="javascript">
+	var hostname = "${hostname!''}", port = "${webimport!''}", userid = "${user.id!''}", session = "${sessionid!''}", orgi = "${orgi!''}";
+	$(document).ready(function() {
+		$('#agentstatus').on("click", function() {
+			if ($(this).hasClass('layui-form-onswitch')) {
+				$(this).removeClass("layui-form-onswitch");
+				loadURL("/agent/notready.html")
+			} else {
+				$(this).addClass("layui-form-onswitch");
+				loadURL("/agent/ready.html");
+			}
+		});
+	});
+</script>
+</head>
+
+<body>
+	<div class="layui-layout layui-layout-admin">
+		<div class="layui-header header header-ukefu">
+			<div class="layui-main">
+				<a class="logo" href="/"><img src="images/logo.png"></a>
+				<ul class="layui-nav">
+					<li class="layui-nav-item">
+						<a href="/">
+							<i class="kfont" style="position: relative;">&#xe717;</i>
+							首页
+						</a>
+					</li>
+					<li class="layui-nav-item "><a href="/agent/index.html" target="maicontent">
+						<i class="kfont icon-iconfontagent"	style="position: relative;"></i>
+						坐席工作台</a>
+					</li>
+					<li class="layui-nav-item layui-this"><a href="/admin">
+						<i class="layui-icon" style="position: relative;">&#xe631;</i>
+						系统管理</a>
+					</li>
+					<li class="layui-nav-item"><a href="javascript:void(0)"
+						target="_blank">
+						<i class="layui-icon" style="position: relative;">&#xe612;</i>
+						<#if user??>${user.email!''}</#if></a>
+						<dl class="layui-nav-child">
+					      <dd><a href="javascript:void(0)">控制面板</a></dd>
+					      <dd><a href="/logout.html">退出系统</a></dd>
+					    </dl>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="layui-side layui-bg-black">
+			<div class="layui-side-scroll">
+				<ul class="layui-nav layui-nav-tree site-ukefu-nav">
+
+					<li class="layui-nav-item layui-nav-itemed">
+						<dl class="layui-nav-child">
+							<dd class="">
+								<a href="/ukefu/layer.html"> <i class="layui-icon"
+									style="top: 3px;">&#xe638;</i>
+								</a>
+							</dd>
+							<dd class="">
+								<a href="/ukefu/layim.html"> <i class="layui-icon"
+									style="position: relative;">&#xe63a;</i>
+								</a>
+							</dd>
+							<dd class="">
+								<a href="/ukefu/laydate.html"> <i class="layui-icon"
+									style="top: 1px;">&#xe637;</i>
+								</a>
+							</dd>
+							<dd class="">
+								<a href="/ukefu/laypage.html"> <i class="layui-icon">&#xe633;</i>
+								</a>
+							</dd>
+							<dd class="">
+								<a href="/ukefu/laytpl.html"> <i class="layui-icon">&#xe628;</i>
+								</a>
+							</dd>
+							<dd class="">
+								<a href="/ukefu/layedit.html"> <i class="layui-icon">&#xe639;</i>
+								</a>
+							</dd>
+							<dd class="">
+								<a href="/ukefu/upload.html"> <i class="layui-icon">&#xe62f;</i>
+								</a>
+							</dd>
+							<dd class="">
+								<a href="/ukefu/tree.html"> <i class="layui-icon">&#xe62e;</i>
+								</a>
+							</dd>
+							<dd class="">
+								<a href="/ukefu/util.html"> <i class="layui-icon">&#xe631;</i>
+								</a>
+							</dd>
+							<dd class="">
+								<a href="/ukefu/flow.html"> <i class="layui-icon">&#xe636;</i>
+								</a>
+							</dd>
+							<dd class="">
+								<a href="/ukefu/code.html"> <i class="layui-icon"
+									style="top: 1px;">&#xe635;</i>
+								</a>
+							</dd>
+						</dl>
+					</li>
+					<li class="layui-nav-item" style="height: 30px; text-align: center"></li>
+				</ul>
+			</div>
+		</div>
+		<div class="layui-body">
+			<div class="layui-tab product-tab" lay-filter="ukefutab" lay-allowClose="true">
+				<ul class="layui-tab-title">
+					<li class="layui-this"><i class="kfont"
+						style="position: relative;">&#xe717;</i> 首页</li>
+				</ul>
+				<#include "/public/agentstatus.html"/>
+				<div class="layui-tab-content product-content">
+					<div class="layui-tab-item layui-show" style="height:100%;">
+						<iframe frameborder="0" src="/admin/content.html" id="maicontent" name="maicontent" width="100%" height="100%"></iframe>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<script>
+			layui.use('element', function(){
+			  var $ = layui.jquery
+			  ,element = layui.element(); //Tab的切换功能，切换事件监听等，需要依赖element模块
+			  
+			  //触发事件
+			  var active = {
+				tabAdd: function(){
+				  //新增一个Tab项
+				  element.tabAdd('ukefutab', {
+					title: '新选项'+ (Math.random()*1000|0) //用于演示
+					,content: '内容'+ (Math.random()*1000|0)
+				  })
+				}
+			  };
+			  
+			  $('.iframe_btn').on('click', function(){
+				var type = $(this).data('type');
+				active[type] ? active[type].call(this) : '';
+			  });
+			});
+		</script>
+</body>
+
+</html>

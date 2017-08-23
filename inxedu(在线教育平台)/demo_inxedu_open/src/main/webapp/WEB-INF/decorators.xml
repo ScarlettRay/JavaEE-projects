@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decorators defaultdir="/WEB-INF/layouts/">
+
+	<!-- 不走布局的url -->
+	<excludes>
+		<pattern>/static/*</pattern>
+		<pattern>/article/*</pattern>
+		<pattern>/kindeditor/*</pattern>
+		<pattern>/*/ajax/*</pattern>
+		<pattern>/admin</pattern>
+		<pattern>/admin/</pattern>
+		<pattern>/admin/main/login</pattern>
+		<pattern>/admin/func/showchild</pattern>
+		<pattern>/front/playkpoint*</pattern>
+		<pattern>/admin/main/login</pattern>
+		<pattern>/zfbpay/*/*</pattern>
+		<pattern>/uc/play/*</pattern>
+		<pattern>/base1.jsp</pattern>
+		<pattern>/admin/main/header</pattern>
+		<pattern>/admin/main/left*</pattern>
+	</excludes>
+	<!-- 后台管理布局 -->
+	<decorator name="admindefault" page="admin/default.jsp">
+		<pattern>/admin/*</pattern>
+		<pattern>/admin/**/*</pattern>
+	</decorator>
+	<!-- edu前端布局 -->
+	<decorator name="edudefault" page="web/default.jsp">
+		<pattern>/front/*/*</pattern>
+		<pattern>/front/*</pattern>
+		<pattern>/index</pattern>
+		<pattern>/</pattern>
+	</decorator>
+	<decorator name="ucdefault" page="web/uc/default_uc.jsp">
+		<pattern>/uc/*</pattern>
+		<pattern>/uc/**/*</pattern>
+	</decorator>
+</decorators>

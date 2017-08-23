@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserEmailMsgMapper">
+	<resultMap id="UserEmailMsgResult" type="UserEmailMsg">
+            <result property="id" column="id"/>
+            <result property="email" column="Email"/>
+            <result property="userId" column="user_id"/>
+            <result property="title" column="title"/>
+            <result property="content" column="content"/>
+            <result property="createTime" column="create_time"/>
+            <result property="loginName" column="login_name"/>
+            <result property="sendTime" column="send_time"/>
+            <result property="status" column="status"/>
+            <result property="type" column="type"/>
+        </resultMap>
+	<sql id="edu_Emailsend_history_columns">
+		edu_emailsend_history.id,
+		edu_emailsend_history.email,
+		edu_emailsend_history.user_id,
+		edu_emailsend_history.title,
+		edu_emailsend_history.content,
+		edu_emailsend_history.create_time,
+		edu_emailsend_history.send_time,
+		edu_emailsend_history.status,
+		edu_emailsend_history.type
+	</sql>
+	<sql id="edu_Emailsend_history_properties">
+		#{id},
+		#{email},
+		#{userId},
+		#{title},
+		#{content},
+		#{createTime},
+		#{send_time},
+		#{status},
+		#{type}
+	</sql>
+	
+	<!-- 添加邮箱 -->
+	<insert id="addUserEmailMsg" parameterType="java.util.List">
+	insert into edu_emailsend_history
+	 (<include refid="edu_Emailsend_history_columns"/>
+	 )values
+	    <foreach collection="list" item="item"  separator=",">
+	    (#{item.id},
+		#{item.email},
+		#{item.userId},
+		#{item.title},
+		#{item.content},
+		#{item.createTime},
+        #{item.sendTime},
+        #{item.status},
+        #{item.type})
+	    </foreach>
+	</insert>
+	
+	<!-- 分页查询 -->
+	<select id="queryUserEmailMsgList" parameterType="java.util.HashMap" resultMap="UserEmailMsgResult">
+	select 
+		<include refid="edu_Emailsend_history_columns"/>,
+		sys_user.login_name
+	from edu_emailsend_history
+	left join sys_user on edu_emailsend_history.user_id =sys_user.user_id
+	<where>
+		<if test="e.email !=null and e.email !='' ">
+				edu_emailsend_history.email like CONCAT('%',#{e.email},'%') 
+		</if>
+        <if test="e.type !=null and e.type !=0">
+            and edu_emailsend_history.type = #{e.type}
+        </if>
+		<if test="e.status !=null and e.status !=0">
+			and edu_emailsend_history.status = #{e.status}
+		</if>
+		<if test="e.startDate !='' and e.startDate !=null and e.endDate !=null and e.endDate !='' ">
+			and edu_emailsend_history.create_time BETWEEN #{e.startDate} and #{e.endDate}
+		</if>
+	</where>
+	order by edu_emailsend_history.id desc
+	<include refid="publicMapper.pageEnd" />
+	</select>
+	<select id="queryUserEmailMsgListCount" parameterType="java.util.HashMap" resultType="int">
+	select count(1)
+	from edu_emailsend_history
+	<where>
+		<if test="e.email !=null and e.email !='' ">
+				edu_emailsend_history.email like CONCAT('%',#{e.email},'%') 
+		</if>
+        <if test="e.type !=null and e.type !=0">
+            and edu_emailsend_history.type = #{e.type}
+        </if>
+		<if test="e.status !=null and e.status !=0">
+			and edu_emailsend_history.status = #{e.status}
+		</if>
+		<if test="e.startDate !='' and e.startDate !=null and e.endDate !=null and e.endDate !='' ">
+			and edu_emailsend_history.create_time BETWEEN #{e.startDate} and #{e.endDate}
+		</if>
+	</where>
+	</select>
+	
+	<!-- 查询单个 -->
+	<select id="queryUserEmailMsgById" parameterType="java.lang.Long" resultMap="UserEmailMsgResult">
+		select <include refid="edu_Emailsend_history_columns"/>,
+		sys_user.login_name
+		from edu_emailsend_history
+		left join sys_user on edu_emailsend_history.user_id =sys_user.user_id
+		where edu_emailsend_history.id=#{id}
+	</select>
+	
+	<!-- 修改未发送的邮箱记录 -->
+	<update id="updateUserEmailMsgById" parameterType="java.util.HashMap">
+        update edu_emailsend_history set
+        title = #{title},
+        content = #{content},
+        send_time = #{sendTime}
+        where id = #{id}
+    </update>
+    
+    <!-- 删除邮箱记录 -->
+    <delete id="delUserEmailMsgById" parameterType="java.util.HashMap">
+      delete from
+		edu_emailsend_history
+		where
+		id = #{value}
+    </delete>
+    
+    <!-- 按条件查询邮箱记录 -->
+    <select id="queryUserEmailList" parameterType="java.util.HashMap" resultMap="UserEmailMsgResult">
+        select
+        <include refid="edu_Emailsend_history_columns"/>,
+        sys_user.login_name
+        from edu_emailsend_history
+        left join sys_user on edu_emailsend_history.user_id =sys_user.user_id
+        <where>
+            <if test="email !=null and email !='' ">
+                edu_emailsend_history.email like CONCAT('%',#{e.email},'%')
+            </if>
+            <if test="type !=null and type !=0 ">
+               and edu_emailsend_history.type = #{type}
+            </if>
+            <if test="status !=null and status !=0 ">
+                and edu_emailsend_history.status = #{status}
+            </if>
+            <if test="sendTime !=null ">
+                <![CDATA[  and edu_emailsend_history.send_time < #{sendTime} ]]>
+            </if>
+        </where>
+    </select>
+    
+    <!-- 更新邮箱为已发送 -->
+    <update id="updateUserEmailStatus" parameterType="java.util.HashMap">
+         update edu_emailsend_history set
+         status = #{status}
+         where id = #{id}
+
+    </update>
+</mapper>

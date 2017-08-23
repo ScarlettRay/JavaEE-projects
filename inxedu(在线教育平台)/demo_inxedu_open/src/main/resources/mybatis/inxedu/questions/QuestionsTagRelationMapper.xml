@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="QuestionsTagRelationMapper">
+
+	<resultMap id="QuestionsTagRelationResult" type="QuestionsTagRelation">
+		<result property="id" column="ID" />
+		<result property="questionsId" column="QUESTIONS_ID" />
+		<result property="questionsTagId" column="QUESTIONS_TAG_ID" />
+		
+		<result property="tagName" column="tagName" />
+	</resultMap>
+	
+	<!-- 表全部的属性 -->
+	<sql id="edu_questions_tag_relation_columns">
+		edu_questions_tag_relation.ID,
+		edu_questions_tag_relation.QUESTIONS_ID,
+		edu_questions_tag_relation.QUESTIONS_TAG_ID
+	</sql>
+
+	<sql id="edu_questions_tag_relation_properties">
+		#{id},
+		#{questionsId},
+		#{questionsTagId}
+	</sql>
+
+	<!-- 添加 -->
+	<insert id="createQuestionsTagRelation" parameterType="QuestionsTagRelation"
+		useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
+		insert INTO edu_questions_tag_relation (
+		<include refid="edu_questions_tag_relation_columns" />
+		) VALUES (
+		<include refid="edu_questions_tag_relation_properties" />
+		)
+	</insert>
+
+	<!-- 查询 -->
+	<select id="queryQuestionsTagRelation" resultMap="QuestionsTagRelationResult" parameterType="QuestionsTagRelation">
+		select
+		<include refid="edu_questions_tag_relation_columns" />
+		,edu_questions_tag.QUESTIONS_TAG_Name as tagName
+		FROM edu_questions_tag_relation
+		left join edu_questions_tag on edu_questions_tag.`QUESTIONS_TAG_ID`=edu_questions_tag_relation.QUESTIONS_TAG_ID
+		<where>
+			<if test="questionsId!=null and questionsId!=0">
+				and edu_questions_tag_relation.QUESTIONS_ID = #{questionsId}
+			</if>
+		</where>
+	</select>
+</mapper>

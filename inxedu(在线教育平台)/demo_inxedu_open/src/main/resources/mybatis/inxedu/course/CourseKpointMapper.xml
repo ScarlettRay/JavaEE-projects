@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CourseKpointMapper">
+
+	<resultMap id="CourseKpointResult" type="CourseKpoint">
+	<result property="kpointId" column="KPOINT_ID"/>
+	<result property="courseId" column="COURSE_ID"/>
+	<result property="name" column="NAME"/>
+	<result property="parentId" column="PARENT_ID"/>
+	<result property="addTime" column="ADD_TIME"/>
+	<result property="sort" column="SORT"/>
+	<result property="playCount" column="PLAY_COUNT"/>
+	<result property="free" column="IS_FREE"/>
+	<result property="videoUrl" column="VIDEO_URL"/>
+	<result property="teacherId" column="TEACHER_ID"/>
+	<result property="playTime" column="play_time"/>
+	<result property="kpointType" column="KPOINT_TYPE"/>
+	<result property="videoType" column="VIDEO_TYPE"/>
+	<result property="fileType" column="FILE_TYPE"/>
+	<result property="content" column="CONTENT"/>
+	</resultMap>
+	
+	<sql id="edu_course_kpoint_columns">
+	EDU_COURSE_KPOINT.KPOINT_ID,
+	EDU_COURSE_KPOINT.COURSE_ID,
+	EDU_COURSE_KPOINT.NAME,
+	EDU_COURSE_KPOINT.PARENT_ID,
+	EDU_COURSE_KPOINT.ADD_TIME,
+	EDU_COURSE_KPOINT.SORT,
+	EDU_COURSE_KPOINT.PLAY_COUNT,
+	EDU_COURSE_KPOINT.IS_FREE,
+	EDU_COURSE_KPOINT.VIDEO_URL,
+	EDU_COURSE_KPOINT.TEACHER_ID,
+	EDU_COURSE_KPOINT.play_time,
+	EDU_COURSE_KPOINT.KPOINT_TYPE,
+	EDU_COURSE_KPOINT.VIDEO_TYPE,
+	EDU_COURSE_KPOINT.FILE_TYPE,
+	EDU_COURSE_KPOINT.CONTENT
+	
+	</sql>
+	<sql id="edu_course_kpoint_properties">
+	#{kpointId},
+	#{courseId},
+	#{name},
+	#{parentId},
+	#{addTime},
+	#{sort},
+	#{playCount},
+	#{free},
+	#{videoUrl},
+	#{teacherId},
+	#{playTime},
+	#{kpointType},
+	#{videoType},
+	#{fileType},
+	#{content}
+	</sql>
+
+	<!-- 创建视频节点 -->
+	<insert id="createCourseKpoint" parameterType="CourseKpoint" keyColumn="KPOINT_ID" keyProperty="kpointId" useGeneratedKeys="true">
+		INSERT INTO EDU_COURSE_KPOINT(<include refid="edu_course_kpoint_columns"/>) 
+		VALUES(<include refid="edu_course_kpoint_properties"/>)
+	</insert>
+	<!-- 查询课程所属视频 -->
+	<select id="queryCourseKpointByCourseId" parameterType="int" resultMap="CourseKpointResult">
+	SELECT <include refid="edu_course_kpoint_columns"/> 
+	FROM EDU_COURSE_KPOINT WHERE EDU_COURSE_KPOINT.COURSE_ID=#{value}
+	ORDER BY EDU_COURSE_KPOINT.SORT DESC
+	</select>
+	
+	<!-- 查询通过视频节点ID，查询节点详情 -->
+	<select id="queryCourseKpointById" parameterType="int" resultType="CourseKpointDto">
+	SELECT EDU_COURSE_KPOINT.KPOINT_ID as kpointId,
+	EDU_COURSE_KPOINT.COURSE_ID as courseId,
+	EDU_COURSE_KPOINT.NAME as name,
+	EDU_COURSE_KPOINT.SORT as sort,
+	EDU_COURSE_KPOINT.PLAY_COUNT as playCount,
+	EDU_COURSE_KPOINT.IS_FREE as free,
+	EDU_COURSE_KPOINT.VIDEO_URL as videoUrl,
+	EDU_COURSE_KPOINT.TEACHER_ID as teacherId,
+	EDU_COURSE_KPOINT.play_time as playTime,
+	EDU_COURSE_KPOINT.KPOINT_TYPE as kpointType,
+	EDU_COURSE_KPOINT.VIDEO_TYPE as videoType,
+	EDU_COURSE_KPOINT.FILE_TYPE fileType,
+	EDU_COURSE_KPOINT.CONTENT content,
+	EDU_TEACHER.NAME as teacherName
+
+	FROM EDU_COURSE_KPOINT
+	LEFT JOIN EDU_TEACHER ON EDU_TEACHER.ID = EDU_COURSE_KPOINT.TEACHER_ID
+	WHERE EDU_COURSE_KPOINT.KPOINT_ID=#{value}
+	</select>
+	
+	<!-- 修改视频节点 -->
+	<update id="updateKpoint" parameterType="CourseKpoint">
+	UPDATE EDU_COURSE_KPOINT SET
+	EDU_COURSE_KPOINT.NAME=#{name},
+	EDU_COURSE_KPOINT.SORT=#{sort},
+	EDU_COURSE_KPOINT.PLAY_COUNT=#{playCount},
+	EDU_COURSE_KPOINT.IS_FREE=#{free},
+	EDU_COURSE_KPOINT.VIDEO_URL=#{videoUrl},
+	EDU_COURSE_KPOINT.TEACHER_ID=#{teacherId},
+	EDU_COURSE_KPOINT.play_time = #{playTime},
+	EDU_COURSE_KPOINT.KPOINT_TYPE=#{kpointType},
+	EDU_COURSE_KPOINT.VIDEO_TYPE=#{videoType},
+	EDU_COURSE_KPOINT.FILE_TYPE=#{fileType},
+	EDU_COURSE_KPOINT.CONTENT=#{content}
+	WHERE EDU_COURSE_KPOINT.KPOINT_ID=#{kpointId}
+	</update>
+	
+	<!-- 删除视频节点 -->
+	<delete id="deleteKpointByIds" parameterType="java.lang.String">
+	DELETE FROM EDU_COURSE_KPOINT where EDU_COURSE_KPOINT.KPOINT_ID IN(${value})
+	</delete>
+	
+	<!-- 修改视频节点所属父节点 -->
+	<update id="updateKpointParentId" parameterType="java.util.Map">
+	UPDATE EDU_COURSE_KPOINT SET EDU_COURSE_KPOINT.PARENT_ID=#{parentId} WHERE EDU_COURSE_KPOINT.KPOINT_ID=#{kpointId}
+	</update>
+	
+	<!--  获取课程的 视频节点总数 -->
+	<select id="getSecondLevelKpointCount" parameterType="long" resultType="int">
+	SELECT IFNULL(count(1),0) 
+		FROM edu_course_kpoint 
+	where 
+		edu_course_kpoint.COURSE_ID=#{value} and edu_course_kpoint.KPOINT_TYPE=1
+	</select>
+</mapper>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WebsiteImagesMapper">
+
+	<resultMap type="WebsiteImages" id="ImagesResult">
+		<result property="imageId" column="IMAGE_ID" />
+		<result property="imagesUrl" column="IMAGE_URL" />
+		<result property="linkAddress" column="LINK_ADDRESS" />
+		<result property="previewUrl" column="PREVIEW_URL" />
+		<result property="title" column="TITLE" />
+		<result property="typeId" column="TYPE_ID" />
+		<result property="seriesNumber" column="SERIES_NUMBER" />
+		<result property="color" column="COLOR" />
+		<result property="describe" column="describe" />
+	</resultMap>
+	<resultMap type="java.util.Map" id="ImagesMapResult">
+		<result property="imageId" column="IMAGE_ID" />
+		<result property="imagesUrl" column="IMAGE_URL" />
+		<result property="linkAddress" column="LINK_ADDRESS" />
+		<result property="previewUrl" column="PREVIEW_URL" />
+		<result property="title" column="TITLE" />
+		<result property="typeName" column="TYPE_NAME" />
+		<result property="seriesNumber" column="SERIES_NUMBER" />
+	</resultMap>
+	<sql id="edu_website_images_columns">
+		EDU_WEBSITE_IMAGES.IMAGE_ID,
+		EDU_WEBSITE_IMAGES.IMAGE_URL,
+		EDU_WEBSITE_IMAGES.LINK_ADDRESS,
+		EDU_WEBSITE_IMAGES.TITLE,
+		EDU_WEBSITE_IMAGES.TYPE_ID,
+		EDU_WEBSITE_IMAGES.SERIES_NUMBER,
+		EDU_WEBSITE_IMAGES.PREVIEW_URL,
+		EDU_WEBSITE_IMAGES.COLOR,
+		EDU_WEBSITE_IMAGES.DESCRIBE
+	</sql>
+	<sql id="edu_website_images_properties">
+		#{imageId},
+		#{imagesUrl},
+		#{linkAddress},
+		#{title},
+		#{typeId},
+		#{seriesNumber},
+		#{previewUrl},
+		#{color},
+		#{describe}
+	</sql>
+	<!-- 添加广告图片 -->
+	<insert id="creasteImage" parameterType="WebsiteImages" useGeneratedKeys="true" keyColumn="IMAGE_ID" keyProperty="imageId">
+		INSERT INTO EDU_WEBSITE_IMAGES(
+		<include refid="edu_website_images_columns" />
+		)
+		VALUE(
+		<include refid="edu_website_images_properties" />
+		)
+	</insert>
+	<!-- 分页查询广告图片，开始 -->
+	<select id="queryImagePage" parameterType="java.util.Map" resultMap="ImagesMapResult">
+		SELECT
+		<include refid="edu_website_images_columns" />
+		,
+		EDU_WEBSITE_IMAGES_TYPE.type_name
+		FROM EDU_WEBSITE_IMAGES
+		LEFT JOIN EDU_WEBSITE_IMAGES_TYPE ON EDU_WEBSITE_IMAGES_TYPE.TYPE_ID =EDU_WEBSITE_IMAGES.TYPE_ID
+		<where>
+			<if test="e.typeId>0">
+				EDU_WEBSITE_IMAGES_TYPE.TYPE_ID=#{e.typeId}
+			</if>
+			<if test="e.title!=null and e.title!=''">
+				AND EDU_WEBSITE_IMAGES.TITLE LIKE CONCAT('%',#{e.title},'%')
+			</if>
+		</where>
+		ORDER BY EDU_WEBSITE_IMAGES_TYPE.TYPE_ID,EDU_WEBSITE_IMAGES.SERIES_NUMBER
+		<include refid="publicMapper.pageEnd" />
+	</select>
+	<select id="queryImagePageCount" parameterType="java.util.Map" resultType="int">
+		SELECT COUNT(1) FROM EDU_WEBSITE_IMAGES
+		LEFT JOIN EDU_WEBSITE_IMAGES_TYPE ON EDU_WEBSITE_IMAGES_TYPE.TYPE_ID =EDU_WEBSITE_IMAGES.TYPE_ID
+		<where>
+			<if test="e.typeId>0">
+				EDU_WEBSITE_IMAGES_TYPE.TYPE_ID=#{e.typeId}
+			</if>
+			<if test="e.title!=null and e.title!=''">
+				AND EDU_WEBSITE_IMAGES.TITLE LIKE CONCAT('%',#{e.title},'%')
+			</if>
+		</where>
+	</select>
+	<!-- 分页查询广告图片，结束 -->
+
+	<!-- 通过ID，查询图片详情 -->
+	<select id="queryImageById" parameterType="int" resultMap="ImagesResult">
+		SELECT
+		<include refid="edu_website_images_columns" />
+		FROM EDU_WEBSITE_IMAGES WHERE IMAGE_ID=#{value}
+	</select>
+
+	<!-- 删除广告图片 -->
+	<delete id="deleteImages" parameterType="java.lang.String">
+		DELETE FROM EDU_WEBSITE_IMAGES WHERE IMAGE_ID IN(${value})
+	</delete>
+
+	<!-- 修改图片 -->
+	<update id="updateImage" parameterType="WebsiteImages">
+		UPDATE EDU_WEBSITE_IMAGES SET
+		EDU_WEBSITE_IMAGES.IMAGE_URL=#{imagesUrl},
+		EDU_WEBSITE_IMAGES.LINK_ADDRESS=#{linkAddress},
+		EDU_WEBSITE_IMAGES.TITLE=#{title},
+		EDU_WEBSITE_IMAGES.TYPE_ID=#{typeId},
+		EDU_WEBSITE_IMAGES.SERIES_NUMBER=#{seriesNumber},
+		EDU_WEBSITE_IMAGES.PREVIEW_URL=#{previewUrl},
+		EDU_WEBSITE_IMAGES.COLOR=#{color},
+		EDU_WEBSITE_IMAGES.describe=#{describe}
+		WHERE EDU_WEBSITE_IMAGES.IMAGE_ID=#{imageId}
+	</update>
+
+	<!-- 通过类型查询图片 -->
+	<select id="queryImagesByType" resultMap="ImagesResult">
+		SELECT
+		<include refid="edu_website_images_columns" />
+		FROM EDU_WEBSITE_IMAGES ORDER BY TYPE_ID
+	</select>
+</mapper>

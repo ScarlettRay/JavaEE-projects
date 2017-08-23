@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WebsiteEhcacheMapper">
+	<resultMap id="WebsiteEhcacheResult" type="WebsiteEhcache">
+		<result property="id" column="id"/>
+		<result property="ehcacheKey" column="ehcache_key"/>
+		<result property="ehcacheDesc" column="ehcache_desc"/>
+	</resultMap>
+	<sql id="edu_website_ehcache_column">
+		edu_website_ehcache.id,
+		edu_website_ehcache.ehcache_key,
+		edu_website_ehcache.ehcache_desc
+	</sql>
+	<sql id="edu_website_ehcache_property">
+		#{id},
+		#{ehcacheKey},
+		#{ehcacheDesc}
+	</sql>
+	
+	<!-- 添加 -->
+	<insert id="addWebsiteEhcache" parameterType="WebsiteEhcache" >
+		insert into edu_website_ehcache(<include refid="edu_website_ehcache_column"/>) values(<include refid="edu_website_ehcache_property"/>)
+	</insert>
+	
+	<!-- 列表 -->
+	<select id="queryWebsiteEhcacheList" parameterType="java.util.HashMap" resultMap="WebsiteEhcacheResult">
+		select <include refid="edu_website_ehcache_column"/> 
+		from edu_website_ehcache
+		<where>
+			<if test="e.ehcacheKey!=null and e.ehcacheKey!=''">
+				edu_website_ehcache.ehcache_key like CONCAT ('%',#{e.ehcacheKey},'%')
+			</if>
+		</where>
+		order by edu_website_ehcache.id desc
+		<include refid="publicMapper.pageEnd" />
+	</select>
+	<select id="queryWebsiteEhcacheListCount" parameterType="java.util.HashMap" resultType="int">
+		select count(1) 
+		from edu_website_ehcache
+		<where>
+			<if test="e.ehcacheKey!=null and e.ehcacheKey!=''">
+				edu_website_ehcache.ehcache_key like CONCAT ('%',#{e.ehcacheKey},'%')
+			</if>
+		</where>
+	</select>
+	
+	<!-- 删除 -->
+	<delete id="delWebsiteEhcache" parameterType="long">
+		delete from edu_website_ehcache where id=#{value}
+	</delete>
+	
+	<!-- 根据Id查询 -->
+	<select id="getWebsiteEhcacheById" parameterType="long" resultMap="WebsiteEhcacheResult">
+		select <include refid="edu_website_ehcache_column"/> from edu_website_ehcache where edu_website_ehcache.id=#{value}
+	</select>
+	
+	<!-- 查询key是否存在 -->
+	<select id="queryWebsiteEhcacheIsExsit" parameterType="java.lang.String" resultType="int">
+		select count(1) from edu_website_ehcache
+		where edu_website_ehcache.ehcache_key=#{ehcacheKey}
+	</select>
+	
+	<!-- 修改 -->
+	<update id="updateWebsiteEhcache" parameterType="map">
+		update edu_website_ehcache 
+		set ehcache_key=#{ehcacheKey},ehcache_desc=#{ehcacheDesc} 
+		where id=#{id}
+	</update>
+	
+</mapper>

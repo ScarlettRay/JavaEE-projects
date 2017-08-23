@@ -1,0 +1,139 @@
+<style>
+<!--
+body { padding-top: 51px; }
+-->
+</style>
+<script type="text/javascript">
+	function showMenu(id){
+		$("#"+id).addClass('active');
+		if($("#"+id).parent().is('.dropdown-menu')){
+			$("#"+id).parent().parent().addClass('active');
+		}
+	}
+	
+	$(function(){
+		$(window).resize(function(){
+			$('body').css('padding-top',$('nav.navbar.navbar-fixed-top').height()+'px');
+		});
+		$('body').css('padding-top',$('nav.navbar.navbar-fixed-top').height()+'px');
+	});
+	
+	/**
+	 * 设置站点
+	 */
+	function oper_site(site){
+		jQuery.ajax({
+			type:'POST',
+			url:'admin/person/site/'+site,
+			success:function(data){
+				if(data.status==1){
+					if(typeof oper=='undefined' && typeof form=='undefined') {
+						Alert('设置成功,请刷新页面');
+					} else {
+						Alert('设置成功.',function(){
+							if(typeof oper!='undefined'&&typeof oper.list!='undefined'&&oper.list instanceof Function) {
+								oper.list()
+							} else if(typeof form!='undefined'&&form.search[0].getAttribute("onclick")!=null){
+								form.search[0].click();
+							};
+						});
+					}
+				} else {
+					Alert('保存失败：'+data.msg);
+				}
+			},
+			error:function(html){
+				var flag = (typeof console != 'undefined');
+				if(flag) console.log("服务器忙，提交数据失败，代码:" +html.status+ "，请联系管理员！");
+				alert("服务器忙，提交数据失败，请联系管理员！");
+			}
+		});
+	}
+</script>
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Home</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+      	<% for(item in session.menu[0]) { %>
+			<% if(session.menu[item.id].~size > 0) { %>
+			
+				<li id="page_${item.urlkey}" role="presentation" class="dropdown">
+				    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+				      ${item.name}<span class="caret"></span>
+				    </a>
+				    <ul class="dropdown-menu" role="menu">
+				<%  for(item2 in session.menu[item.id]) { %>
+					<li id="page_${item2.urlkey}"><a role="menuitem"  href="${item2.url}">${item2.name}</a></li>
+				<% } %>
+					</ul>
+		  		</li>
+			<% } else { %>
+				<li id="page_${item.urlkey}"><a href="${item.url}">${item.name}</a></li>
+			<% } %>
+		<% } %>
+      
+      	
+      	<%  /*
+		<li id="page_contact"><a href="contact/list">联系人管理</a></li>
+		
+		<li id="page_system" role="presentation" class="dropdown">
+		    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+		      系统管理<span class="caret"></span>
+		    </a>
+		    <ul class="dropdown-menu" role="menu">
+		    	<li id="page_department"><a role="menuitem" href="department/list">部门管理</a></li>
+				<li id="page_user"><a role="menuitem" href="user/list">用户管理</a></li>
+				<li id="page_role"><a role="menuitem" href="role/list">角色管理</a></li>
+				<li id="page_menu"><a role="menuitem" href="menu/list">菜单管理</a></li>
+		     	<li id="page_dict"><a role="menuitem" href="dict/list">数据字典</a></li>
+		    </ul>
+  		</li>
+  		*/ %>
+  		
+      </ul>
+      
+      <ul class="nav navbar-nav navbar-right" style="margin-right: 2%">
+        <li><p class="navbar-text"><a href="admin/person">${session.session_user.realname!session.session_user.username }</a>，您好</p></li>
+        <li><p class="navbar-text"  style="margin-right: 10px;margin-left: 0px;"><a href="#"  onclick="window.location.href='admin/logout';return false;">退出</a></p></li>
+       
+        <% 
+       if(!isEmpty(sites)) {
+       %>
+       	<li>
+       		
+       <% 
+       		var siteName = 'default';
+       		for(item in sites) {
+       			if(session.session_user.backSiteId==item.id)  siteName = item.name;
+       		}
+       	%>
+		 <div class="dropdown" style="margin-top: 6px;">
+		  <button class="btn btn-link dropdown-toggle" title="站点" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		   <span class="glyphicon glyphicon-globe"></span> ${siteName} <span class="caret"></span>
+		  </button>
+		  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+		  	<% for(item in sites) { %>
+		    <li><a href="#" onclick="oper_site('${item.id}');return false;">站点：${item.name}</a></li>
+	    <% 
+	    	}
+	     %>
+		  </ul>
+		</div>
+		</li>
+		<% 
+	    }
+	     %>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<input type="hidden" name="form.orderColumn" value="${form.orderColumn!''}" />
+<input type="hidden" name="form.orderAsc" value="${form.orderAsc!''}" />

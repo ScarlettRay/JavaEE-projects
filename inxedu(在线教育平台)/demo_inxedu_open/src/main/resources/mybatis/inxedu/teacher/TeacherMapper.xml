@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TeacherMapper">
+	<resultMap id="TeacherResult" type="Teacher">
+		<result property="id" column="ID" />
+		<result property="name" column="NAME" />
+		<result property="education" column="EDUCATION" />
+		<result property="career" column="CAREER" />
+		<result property="isStar" column="IS_STAR" />
+		<result property="picPath" column="PIC_PATH" />
+		<result property="status" column="STATUS" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="subjectId" column="SUBJECT_ID" />
+		<result property="sort" column="SORT" />
+	</resultMap>
+	<sql id="edu_teacher_columns">
+		EDU_TEACHER.ID,
+		EDU_TEACHER.NAME,
+		EDU_TEACHER.EDUCATION,
+		EDU_TEACHER.CAREER,
+		EDU_TEACHER.IS_STAR,
+		EDU_TEACHER.PIC_PATH,
+		EDU_TEACHER.STATUS,
+		EDU_TEACHER.CREATE_TIME,
+		EDU_TEACHER.UPDATE_TIME,
+		EDU_TEACHER.SUBJECT_ID,
+		EDU_TEACHER.SORT
+	</sql>
+
+	<sql id="edu_teacher_properties">
+		#{id},
+		#{name},
+		#{education},
+		#{career},
+		#{isStar},
+		#{picPath},
+		#{status},
+		#{createTime},
+		#{updateTime},
+		#{subjectId},
+		#{sort}
+	</sql>
+
+	<!-- 添加老师 -->
+	<insert id="createTeacher" parameterType="Teacher" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO EDU_TEACHER (
+		<include refid="edu_teacher_columns" />
+		)
+		VALUES(
+		<include refid="edu_teacher_properties" />
+		)
+	</insert>
+
+	<!-- 删除老师 -->
+	<delete id="deleteTeacherById" parameterType="int">
+		UPDATE EDU_TEACHER SET EDU_TEACHER.STATUS=1 WHERE EDU_TEACHER.ID = #{value}
+	</delete>
+
+	<!-- 修改老师 -->
+	<update id="updateTeacher" parameterType="Teacher">
+		UPDATE EDU_TEACHER SET
+		EDU_TEACHER.ID = #{id},
+		EDU_TEACHER.NAME = #{name},
+		EDU_TEACHER.EDUCATION = #{education},
+		EDU_TEACHER.CAREER = #{career},
+		EDU_TEACHER.IS_STAR = #{isStar},
+		EDU_TEACHER.PIC_PATH = #{picPath},
+		EDU_TEACHER.UPDATE_TIME = #{updateTime},
+		EDU_TEACHER.SUBJECT_ID =#{subjectId},
+		EDU_TEACHER.SORT=#{sort}
+		WHERE EDU_TEACHER.ID = #{id}
+	</update>
+
+	<!-- 根据id获取单个Teacher对象 -->
+	<select id="getTeacherById" resultMap="TeacherResult" parameterType="int">
+		SELECT
+		<include refid="edu_teacher_columns" />
+		FROM EDU_TEACHER WHERE ID = #{value}
+	</select>
+
+	<!-- 根据条件获取Teacher列表 -->
+	<select id="queryTeacherListPage" resultMap="TeacherResult" parameterType="java.util.Map">
+		SELECT
+		<include refid="edu_teacher_columns" />
+		FROM EDU_TEACHER
+		left join sys_subject on EDU_TEACHER.SUBJECT_ID = sys_subject.subject_id
+		<where>
+			EDU_TEACHER.STATUS=0
+			<if test="e.isStar>0">
+				AND EDU_TEACHER.IS_STAR=#{e.isStar}
+			</if>
+			<if test="e.name!=null and e.name!=''">
+				AND	<![CDATA[  EDU_TEACHER.NAME LIKE CONCAT('%',#{e.name},'%')  ]]>
+			</if>
+			<if test="e.subjectId>0">
+				AND (EDU_TEACHER.SUBJECT_ID=#{e.subjectId} or sys_subject.parent_id = #{e.subjectId})
+			</if>
+			<if test="e.beginCreateTime!=null and e.beginCreateTime!=''">
+				AND EDU_TEACHER.CREATE_TIME >= #{e.beginCreateTime}
+			</if>
+			<if test="e.endCreateTime!=null and e.endCreateTime!=''">
+				AND <![CDATA[EDU_TEACHER.CREATE_TIME <= #{e.endCreateTime}]]>
+			</if>
+		</where>
+		ORDER BY EDU_TEACHER.SORT DESC
+	</select>
+
+	<!-- 查询课程讲师 -->
+	<select id="queryCourseTeacerList" parameterType="int" resultType="java.util.Map">
+		SELECT 
+			EDU_TEACHER.ID as id, 
+			EDU_TEACHER.NAME as name,
+			EDU_TEACHER.EDUCATION as education,
+			EDU_TEACHER.PIC_PATH as picPath,
+			EDU_TEACHER.CAREER as career
+		FROM EDU_TEACHER
+		LEFT JOIN EDU_COURSE_TEACHER ON EDU_COURSE_TEACHER.TEACHER_ID = EDU_TEACHER.ID
+		WHERE EDU_COURSE_TEACHER.COURSE_ID=#{value}
+	</select>
+
+	<!-- 条件查询老师，公共使用 -->
+	<select id="queryTeacherList" parameterType="QueryTeacher" resultMap="TeacherResult">
+		SELECT
+		<include refid="edu_teacher_columns" />
+		FROM EDU_TEACHER
+		WHERE EDU_TEACHER.STATUS=0
+		<if test="subjectId>0">
+			AND EDU_TEACHER.SUBJECT_ID=#{subjectId}
+		</if>
+		<if test="teacherId>0">
+			AND EDU_TEACHER.ID !=#{teacherId}
+		</if>
+		ORDER BY EDU_TEACHER.SORT DESC
+		<if test="count>0">
+			LIMIT #{count}
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WebsiteNavigateMapper">
+
+    <resultMap id="WebsiteNavigateResult" type="WebsiteNavigate">
+    <result property="id" column="ID"/>
+    <result property="name" column="NAME"/>
+    <result property="url" column="URL"/>
+    <result property="newPage" column="NEWPAGE"/>
+    <result property="type" column="type"/>
+    <result property="orderNum" column="ORDERNUM"/>
+    <result property="status" column="STATUS"/>
+    </resultMap>
+
+    <sql id="edu_website_navigate_columns">
+    EDU_WEBSITE_NAVIGATE.ID,
+    EDU_WEBSITE_NAVIGATE.NAME,
+    EDU_WEBSITE_NAVIGATE.URL,
+    EDU_WEBSITE_NAVIGATE.NEWPAGE,
+    EDU_WEBSITE_NAVIGATE.TYPE,
+    EDU_WEBSITE_NAVIGATE.ORDERNUM,
+    EDU_WEBSITE_NAVIGATE.STATUS
+    </sql>
+
+    <sql id="edu_website_navigate_properties">
+    #{id},
+    #{name},
+    #{url},
+    #{newPage},
+    #{type},
+    #{orderNum},
+    #{status}
+    </sql>
+	
+    <!-- 查询导航管理配置 -->
+	<select id="getWebsiteNavigate" resultMap="WebsiteNavigateResult" parameterType="WebsiteNavigate">
+	SELECT <include refid="edu_website_navigate_columns"/> FROM EDU_WEBSITE_NAVIGATE
+	<where>
+	<if test="type!=null and type!='' ">
+	EDU_WEBSITE_NAVIGATE.TYPE=#{type}
+	</if>
+	</where>
+	ORDER BY EDU_WEBSITE_NAVIGATE.TYPE,EDU_WEBSITE_NAVIGATE.ORDERNUM DESC
+	</select>
+	<!-- 添加导航 -->
+	<insert id="createWebsiteNavigate" parameterType="WebsiteNavigate" keyProperty="id" keyColumn="ID" useGeneratedKeys="true">
+	INSERT INTO EDU_WEBSITE_NAVIGATE(<include refid="edu_website_navigate_columns"/>) 
+	VALUES(<include refid="edu_website_navigate_properties"/>)
+	</insert>
+	<!-- 更新导航 -->
+	<update id="updateWebsiteNavigate" parameterType="WebsiteNavigate">
+	UPDATE EDU_WEBSITE_NAVIGATE SET
+    EDU_WEBSITE_NAVIGATE.NAME=#{name},
+    EDU_WEBSITE_NAVIGATE.URL=#{url},
+    EDU_WEBSITE_NAVIGATE.NEWPAGE=#{newPage},
+    EDU_WEBSITE_NAVIGATE.type=#{type},
+    EDU_WEBSITE_NAVIGATE.ORDERNUM=#{orderNum}
+	WHERE EDU_WEBSITE_NAVIGATE.ID=#{id}
+	</update>
+	<!-- 删除导航 -->
+	<delete id="delWebsiteNavigate" parameterType="int">
+	DELETE FROM EDU_WEBSITE_NAVIGATE  WHERE EDU_WEBSITE_NAVIGATE.ID=#{id}
+	</delete>
+	<!-- 冻结导航 -->
+	<update id="freezeWebsiteNavigate" parameterType="WebsiteNavigate">
+	UPDATE EDU_WEBSITE_NAVIGATE SET EDU_WEBSITE_NAVIGATE.STATUS=#{status} WHERE EDU_WEBSITE_NAVIGATE.ID=#{id}
+	</update>
+	<!-- id查询导航 -->
+	<select id="getWebsiteNavigateById" resultMap="WebsiteNavigateResult"  parameterType="int">
+	SELECT <include refid="edu_website_navigate_columns"/> FROM EDU_WEBSITE_NAVIGATE WHERE EDU_WEBSITE_NAVIGATE.ID=#{value}
+	</select>    
+	<!-- 查询未冻结的导航列表 -->
+	<select id="getWebNavigate" resultMap="WebsiteNavigateResult">
+	SELECT <include refid="edu_website_navigate_columns"/> FROM EDU_WEBSITE_NAVIGATE
+	WHERE EDU_WEBSITE_NAVIGATE.STATUS=0
+	ORDER BY EDU_WEBSITE_NAVIGATE.type,EDU_WEBSITE_NAVIGATE.ORDERNUM DESC
+	</select>
+	
+</mapper>

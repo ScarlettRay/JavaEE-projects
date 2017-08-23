@@ -1,0 +1,174 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+html,body {position: relative;height: 100%;overflow: hidden;}
+body {
+	background: #fff url('../assets/load-bg.jpg') 50% 50% no-repeat;
+	background-size: cover;
+	background-origin: padding-box;background-clip: border-box;filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/static/admin/assets/load-bg.jpg',sizingMethod='scale');
+	font-family: "Lantinghei SC","Open Sans",Arial,"Hiragino Sans GB","Microsoft YaHei","΢���ź�","STHeiti","WenQuanYi Micro Hei",SimSun,sans-serif;
+}
+
+img {
+	border: 0;
+}
+
+#container {
+	width: 960px;
+	margin: 0 auto;
+}
+
+#container .logo {
+	width: 230px;
+	margin: 30% 0 0 174px;
+	position: relative;
+	text-align: center;
+}
+
+#container .logo a {
+	position: absolute;
+	left: 0;
+	bottom: 45px;
+}
+
+#container .logo a img {
+	max-width: 230px;
+}
+
+#container #box {
+	background: #fff;
+	box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.1);
+	border: 1px solid #fbfbfb;
+	clear: both;
+	float: none;
+	width: 70%;
+	margin: -30px auto 0;
+	padding: 45px 0;
+}
+
+p.main label {
+	float: left;
+	padding: 5px;
+	display: inline;
+	margin-left: 40px;
+	font-size: 13px;
+	color: #000;
+	margin-right: 10px;
+}
+
+.b-box {
+	/* border-top: 2px solid #333; */
+	width: 100%;
+}
+
+#box p {
+	clear: both;
+	float: none;
+	width: 100%;
+	overflow: hidden;
+}
+
+#box h2 {
+	border-bottom: 1px solid #f2f2f2;
+	font: 20px/32px 'microsoft yahei';
+	color: #333;
+	text-align: center;
+	margin: -15px 0 30px;
+	padding-bottom: 15px;
+	font-family: "Lantinghei SC","Open Sans",Arial,"Hiragino Sans GB","Microsoft YaHei","΢���ź�","STHeiti","WenQuanYi Micro Hei",SimSun,sans-serif;
+}
+
+p.main {
+	margin-bottom: 10px;
+	overflow: hidden;
+}
+
+p.main INPUT {
+	background: url('../assets/input.png') 0 0 repeat-x;
+	border: 1px solid #d3d3d3;
+	color: #555;
+	padding: 5px;
+	float: left;
+	width: 200px;
+	font-family: "Lantinghei SC","Open Sans",Arial,"Hiragino Sans GB","Microsoft YaHei","΢���ź�","STHeiti","WenQuanYi Micro Hei",SimSun,sans-serif;
+}
+
+p.main INPUT:focus {
+	background: none;
+	border-color: #e05757;
+}
+
+p.main label {
+	font: 14px/20px "Lantinghei SC","Open Sans",Arial,"Hiragino Sans GB","Microsoft YaHei","΢���ź�","STHeiti","WenQuanYi Micro Hei",SimSun,sans-serif;;
+}
+
+p.main .yzm-pic {
+	float: left;
+	width: 90px;
+	height: 28px;
+	margin-left: 5px;
+	overflow: hidden;
+}
+
+input.login {
+	float: right;
+	padding: 5px 40px;
+	color: #fff;
+	font-size: 12px;
+	text-decoration: none;
+	border: 1px solid #555;
+	background: url('../assets/rep1.png') 50% 50% repeat-x;
+	display: inline;
+	margin-right: 50px;
+	cursor: pointer;
+	font-family: "Lantinghei SC","Open Sans",Arial,"Hiragino Sans GB","Microsoft YaHei","΢���ź�","STHeiti","WenQuanYi Micro Hei",SimSun,sans-serif;
+}
+
+input.login:hover {
+	opacity: .95;
+	filter: alpha(opacity = 95);
+}
+
+span {
+	font-size: 13px;
+	color: #666;
+}
+
+.space {
+	padding-top: 15px;
+}
+
+.space span {
+	float: right;
+	margin-right: 10px;
+	color: #E05757;
+}
+
+span input {
+	margin-left: 125px;
+	margin-right: 5px;
+	border: 1px solid #111;
+	background: #444;
+	color: #fff;
+}
+
+p.space label {
+	margin-left: 110px;
+	font: 12px/20px 'Microsoft YaHei';
+	cursor: pointer;
+}
+
+.login-foot {
+	margin: 30px auto 0;
+	text-align: center;
+}
+
+.login-foot a {
+	color: #999;
+	text-decoration: none;
+}
+
+.login-foot a:hover {
+	text-decoration: underline;
+}

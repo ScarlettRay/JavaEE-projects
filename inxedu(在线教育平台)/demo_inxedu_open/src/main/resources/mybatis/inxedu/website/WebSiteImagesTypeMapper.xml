@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WebSiteImagesTypeMapper">
+	
+	<!-- 创建图片类型 -->
+	<insert id="createImageType" parameterType="WebSiteImagesType" useGeneratedKeys="true" keyColumn="TYPE_ID" keyProperty="typeId">
+	INSERT INTO EDU_WEBSITE_IMAGES_TYPE(TYPE_ID,TYPE_NAME) VALUE(#{typeId},#{typeName})
+	</insert>
+	<!-- 查询所有的图片列表 -->
+	<select id="queryAllTypeList" resultType="WebSiteImagesType">
+	SELECT TYPE_ID AS typeId,TYPE_NAME AS typeName FROM EDU_WEBSITE_IMAGES_TYPE
+	</select>
+	<!-- 删除图片类型 -->
+	<delete id="deleteTypeById" parameterType="int">
+	DELETE FROM EDU_WEBSITE_IMAGES_TYPE WHERE TYPE_ID=#{value}
+	</delete>
+	<!-- 修改图片类型 -->
+	<update id="updateType" parameterType="WebSiteImagesType">
+	UPDATE EDU_WEBSITE_IMAGES_TYPE SET 
+	TYPE_NAME=#{typeName} WHERE TYPE_ID=#{typeId}
+	</update>
+</mapper>

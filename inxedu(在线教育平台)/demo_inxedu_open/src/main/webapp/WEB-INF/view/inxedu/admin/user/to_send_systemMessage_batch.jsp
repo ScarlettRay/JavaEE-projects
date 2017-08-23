@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ include file="/base.jsp" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head><title>批量发送系统消息</title>
+<script type="text/javascript" src="${ctx }/kindeditor/kindeditor-all.js"></script>
+<script type="text/javascript">
+KindEditor.ready(function(K) {
+	window.EditorObject = K.create('textarea[id="message"]', {
+			resizeType  : 1,
+	       filterMode : false,//true时过滤HTML代码，false时允许输入任何代码。
+	       allowPreviewEmoticons : false,
+	       allowUpload : true,//允许上传 
+	       syncType : 'auto',
+	       urlType : 'domain',//absolute
+	       newlineTag :'br',//回车换行br|p
+	       uploadJson : '<%=keuploadSimpleUrl%>&param=question',//图片上传路径
+	       allowFileManager : false,
+	       afterBlur:function(){EditorObject.sync();}, 
+	       items : ['emoticons']
+	});
+});
+	function sendmessage(){
+		var userEmails=$("#userEmails").val();
+		if(userEmails==null || userEmails.trim()==""){
+			alert("请输入用户邮箱");
+			return false;
+		}
+		var content = $("#message").val();
+		if(content==null||content.trim()==""){
+			alert("请填写消息内容在发送");
+			return false;
+		}
+		 $.ajax({
+             url:"${ctx}/admin/user/letter/sendJoinGroupBatch",
+             type:"post",
+             data:{
+            	 "content":content,
+            	 "userEmails":userEmails
+            	 },
+             dataType:"json",
+             success:function(result){
+             	if(result.message=='success'){
+             		KindEditor.html('#message', '');
+             		 alert("发送成功");
+             	}else{
+             		alert(result.message);
+             	}
+             }
+         });
+	}
+</script>
+
+</head>
+<body  >
+<fieldset>
+	<legend>
+		<span>系统消息</span>
+		&gt;
+		<span>批量发送系统消息</span>
+	</legend>
+	<div class="">
+		<form action="${ctx}/admin/cou/addCourse" method="post" id="saveCourseForm">
+			<input type="hidden" name="course.logo" />
+			<table style="line-height: 35px;">
+				<tr>
+					<td>
+						<font color="red">*</font>批量选择用户:
+					</td>
+					<td>
+						<textarea name="" id="userEmails" name="userEmails"  style="width: 641px; height: 76px;"></textarea>
+						请输入要发送系统消息的用户邮箱,每个邮箱用逗号隔开,可从用户列表导出用户后,复制用户邮箱.
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<font color="red">*</font>发送系统消息:
+					</td>
+					<td>
+						<textarea name="" id="message"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+						<input onclick="sendmessage()" class="button" type="button" value="保存" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</fieldset>
+</body>
+</html>
