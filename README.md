@@ -1,4 +1,4 @@
-# Awesome JavaEE projects  :date:   :octocat:  :astonished:  :heart_eyes: :rocket: :video_game:
+# Awesome JavaEE projects  :date:  :computer: :arrow_down: :astonished:  :heart_eyes: :rocket: :tada: :video_game:
 
 **这个仓库收藏了一些自己在学习和工作过程中接触到的Javaee项目，为后人的项目开发提供一些思路或者解决方案吧。也希望各位看官可以将你们觉得不错的项目提交上来，格式不限，网站链接、网盘、源码都可以，PR,issues,或者直接联系我。**
 
