@@ -13,7 +13,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 >- [x] [龙果支付系统](https://gitee.com/roncoocom/roncoo-pay)
 龙果支付系统，已接通支付宝、微信支付，具备支付、对账、清结算等功能 http://www.roncoo.com
 
->- [x] >[在线教育平台](https://gitee.com/inxeduopen/inxedu)
+>- [x] [在线教育平台](https://gitee.com/inxeduopen/inxedu)
 免费开源网校系统源代码轻松搭建在线教育平台 http://www.inxedu.com
 
 
