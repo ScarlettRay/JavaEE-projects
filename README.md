@@ -28,7 +28,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 - [x] [CRM系统](https://pan.baidu.com/s/1zkr4-rOC9Phg9KdMkc1HJg)
 
 ## LICENSE
-[Apache 2.0](https://github.com/ScarlettRay/JavaEE-projects/blob/master/LICENSE)
+[MIT](https://github.com/ScarlettRay/JavaEE-projects/blob/master/LICENSE)
 
 
 
